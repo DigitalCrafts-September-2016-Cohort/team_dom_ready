@@ -1,3 +1,7 @@
+#Import and load dotenv folder for python to easily set environment variables
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 from flask import Flask, request, jsonify
 import pg, os, bcrypt, uuid
 
