@@ -16,7 +16,7 @@ db.debug = True
 
 tmp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-app = Flask('team_dom_ready, static_url_path='', template_folder=tmp_dir,
+app = Flask('team_dom_ready', static_url_path='', template_folder=tmp_dir,
    static_folder=static_folder)
 
 @app.route("/")
