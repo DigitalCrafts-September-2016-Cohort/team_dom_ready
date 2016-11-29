@@ -1,0 +1,21 @@
+/*
+ * Base structure
+ */
+
+ /* Base font size to use throughout the whole site. */
+html {
+  font-size: 10px;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+/*
+ * Font Awesome styles
+ */
+
+/* Styles used in the signup.html file */
+.fa-exclamation-circle {
+  color: red;
+}
