@@ -26,7 +26,6 @@ app.controller("HomeController", function($scope) {
 });
 
 app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
-  console.log("Entered the SignUpController");
   $scope.submitSignup = function() {
     // store user signup info in a scope object
     $scope.signup_data = {
