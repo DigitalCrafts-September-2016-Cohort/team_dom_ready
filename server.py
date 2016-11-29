@@ -5,12 +5,19 @@ load_dotenv(find_dotenv())
 from flask import Flask, request, jsonify
 import pg, os, bcrypt, uuid
 
+import googlemaps
+from datetime import datetime
+
 db = pg.DB(
     dbname=os.environ.get('PG_DBNAME'),
     host=os.environ.get('PG_HOST'),
     user=os.environ.get('PG_USERNAME'),
-    passwd=os.environ.get('PG_PASSWORD')
+    passwd=os.environ.get('PG_PASSWORD'),
 )
+
+# Google API key
+api_key = os.environ.get('GOOGLE_API_KEY')
+gmaps = googlemaps.Client(key=api_key)
 
 db.debug = True
 
@@ -53,6 +60,18 @@ def api_signup():
     return jsonify(signup_customer)
 
 
+@app.route("/api/search")
+def api_search():
+    # 11055 Perimeter Trace East, Atlanta GA 30346
+
+    address = request.args.get('user_query')
+    address = str(address)
+    print '\n\naddress variable %s\n\n' % address
+    print type(address)
+    # Geocoding an address
+    geocode_result = gmaps.geocode(address)
+    print "\n\n\nThis is the geocode data: %s\n\n\n" % geocode_result
+    return jsonify(geocode_result)
 
 
 
