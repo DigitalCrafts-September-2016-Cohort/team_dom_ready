@@ -24,6 +24,9 @@ def home():
 
 @app.route("/api/signup", methods=["POST"])
 def api_signup():
+    customer_info = request.get_json()
+    print "Customer information: %s" % customer_info
+
     username = request.get_json()['username']
     email = request.get_json()['email']
     password = request.get_json()['password']
@@ -36,7 +39,7 @@ def api_signup():
     # second step, generate the encrypted password
     encrypted_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-    result = db.insert(
+    signup_customer = db.insert(
         'customer',
         {
             'username': username,
@@ -46,7 +49,8 @@ def api_signup():
             'last_name': last_name
         }
     )
-    return jsonify(result)
+    print "Customer signup information: %s" % signup_customer
+    return jsonify(signup_customer)
 
 
 
