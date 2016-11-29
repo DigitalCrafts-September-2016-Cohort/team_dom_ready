@@ -46,3 +46,23 @@ CREATE TABLE wishlist_loc (
   customer_id integer REFERENCES customer (id),
   location_id integer REFERENCES location (id)
 );
+
+
+
+
+
+-- sample queries
+
+select
+	*
+from
+	review
+inner join
+ 	location on
+ 	review.location_id = location.id
+inner join
+	loc_category on
+	loc_category.location_id = location.id
+inner join
+	category on
+	loc_category.category_id = category.id;

@@ -15,8 +15,9 @@ db = pg.DB(
 db.debug = True
 
 tmp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-# Initialize the Flask application
-app = Flask("DOM Ready App", static_url_path='', template_folder = tmp_dir)
+static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+app = Flask('team_dom_ready, static_url_path='', template_folder=tmp_dir,
+   static_folder=static_folder)
 
 @app.route("/")
 def home():
