@@ -130,6 +130,17 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
     });
   };
 
+  service.profile = function() {
+    // console.log("Profile data inside the factory: ", profile);
+    var url = '/api/profile';
+    return $http({
+      method: 'GET',
+      url: url,
+      params: {
+        profile_token: $rootScope.authToken
+      }
+    });
+  };
 
   // Requests name, lat/lng of locations reviewed from the database
   service.requestMarkersInfo = function() {
@@ -261,6 +272,7 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $r
     // })
     .success(function(login) {
       $cookies.putObject('cookieData', login);
+      console.log("Cookie data: ", login);
       // store user information in a $rootScope variable
       $rootScope.user_info = login.user;
       // store token information in a $rootScope variable
@@ -272,6 +284,18 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $r
       $state.go('home');
     });
   };
+});
+
+app.controller("ProfileController", function($scope, Dom_Ready_Factory, $rootScope) {
+  // console.log("Hi from the ProfileController");
+  // console.log("Token from app: ", $scope.token);
+  console.log("I have a token: ", $rootScope.authToken);
+  Dom_Ready_Factory.profile()
+    .success(function(profile_info) {
+      $scope.profile_info = profile_info;
+      console.log("Profile info inside controller: ", profile_info);
+      console.log("Here's the profile_info", profile_info);
+    });
 });
 
 
@@ -294,6 +318,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
     url: "/login",
     templateUrl: "templates/login.html",
     controller: "LoginController"
+  })
+  .state({
+    name: "profile",
+    url: "/profile",
+    templateUrl: "templates/profile.html",
+    controller: "ProfileController"
   })
   .state({
     name: "location",
