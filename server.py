@@ -100,18 +100,18 @@ def api_search():
 
         markers = db.query(
         """
-            select
+            SELECT
         		name,
             	latitude,
             	longitude,
             	google_places_id
-            from
+            FROM
             	location,
             	review,
             	customer
-            where
-            	review.location_id = location.id and
-            	review.customer_id = customer.id and
+            WHERE
+            	review.location_id = location.id AND
+            	review.customer_id = customer.id AND
             	customer.id = $1;
         """, customer_id).dictresult()
         return jsonify(markers)
@@ -122,8 +122,17 @@ def api_search():
         geocode_result = gmaps.geocode(address)
         return jsonify(geocode_result)
 
-@app.route('/api/edit', methods=['POST'])
-def edit():
+
+@app.route('/api/location')
+def location():
+    place_id = request.args.get('place_id')
+    place_id = str(place_id)
+    # Geocoding a place id
+    geocode_result = gmaps.place(place_id)
+    return jsonify(geocode_result)
+
+@app.route('/api/location/edit', methods=['POST'])
+def location_edit():
 
     data = request.get_json()
     # grab customer id

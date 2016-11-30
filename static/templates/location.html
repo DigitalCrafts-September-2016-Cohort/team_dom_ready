@@ -4,18 +4,13 @@
 <div class="locationMap">
 
 </div>
-<p>
-  Type: {{results.types[0]}}
-</p>
-<p>
-  Website: {{results.website}}
-</p>
-<p>
-  {{locationDescription}}
-</p>
+<p>Type: {{results.types[0]}}</p>
+<p>Website: {{results.website}}</p>
+<p>Phone: {{results.formatted_phone_number}}</p>
+<p>{{locationDescription}}</p>
 <h2>{{reviewTitle}}</h2>
-<p>
-  {{reviewBody}}
-</p>
+<p>{{reviewBody}}</p>
 
-<p>Hello there from the location.html file</p>
+<div ng-repeat="image in imageUrls">
+  <img ng-src="{{image}}" alt="hello">
+</div>
