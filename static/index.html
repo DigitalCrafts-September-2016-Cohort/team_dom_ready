@@ -32,7 +32,9 @@
           <li><a ng-if="user_info">Welcome {{user_info.first_name}}</a></li>
           <li><a ng-if="!user_info" ui-sref="signup">Sign Up</a></li>
           <li><a ng-if="!user_info" ui-sref="login">Login</a></li>
+          <li><a ng-if="user_info" ui-sref="profile" >Profile</a></li>
           <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
+          Token: {{authToken}}
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

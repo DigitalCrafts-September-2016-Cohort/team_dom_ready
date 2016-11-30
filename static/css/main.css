@@ -19,3 +19,18 @@ body {
 .fa-exclamation-circle {
   color: red;
 }
+
+/*
+ * Profile page
+ */
+
+/* Image styles */
+ .profile_image {
+    width: 300px;
+    border: 15px solid #FFF;
+    /*border-radius: 100%;*/
+ }
+
+.image_div {
+  background-color: #000;
+}
