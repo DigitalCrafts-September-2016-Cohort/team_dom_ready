@@ -33,7 +33,23 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
     // }
   };
 
+  service.location = function(id) {
+    var url = 'https://maps.googleapis.com/maps/api/place/details/json',
+        apiKey = 'AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A';
+    return $http({
+      method: 'GET',
+      url: url,
+      params: {
+        placeid: id,
+        key: apiKey
+      }
+    });
+  };
+
+  service.locationsaved = function()
   return service;
+
+
 });
 
 app.controller("HomeController", function($scope, Dom_Ready_Factory) {
@@ -48,6 +64,17 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory) {
         console.log(data);
       });
   };
+});
+
+app.controller("LocationController", function($scope, Dom_Ready_Factory) {
+  var atv = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
+  var aquarium = 'ChIJGQT0RX4E9YgR3EqvqXZw1_4';
+  Dom_Ready_Factory.location()
+    .success(function(results){
+      $scope.results = results.result;
+      console.log($scope.results);
+    });
+
 });
 
 app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
@@ -72,6 +99,7 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
   };
 });
 
+
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
   .state({
@@ -91,6 +119,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
     url: "/login",
     templateUrl: "templates/login.html",
     controller: "LoginController"
+  })
+  .state({
+    name: "location",
+    url: "/location",
+    templateUrl: "templates/location.html",
+    controller: "LocationController"
   });
 
   $urlRouterProvider.otherwise('/');
