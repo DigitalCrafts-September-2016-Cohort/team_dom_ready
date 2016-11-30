@@ -129,19 +129,31 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
   };
 
   service.location = function(id) {
-    var url = 'https://maps.googleapis.com/maps/api/place/details/json',
-        apiKey = 'AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A';
+    var url = '/api/location';
     return $http({
       method: 'GET',
       url: url,
       params: {
-        placeid: id,
-        key: apiKey
+        place_id: id
       }
     });
   };
 
-  service.locationsaved = function()
+  // service.locationPhoto = function(photoReference, dimensions) {
+  //   var url = 'https://maps.googleapis.com/maps/api/place/photo',
+  //       apiKey = 'AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A';
+  //   return $http({
+  //     method: 'GET',
+  //     url: url,
+  //     params: {
+  //       key: apiKey,
+  //       photoreference: photoReference,
+  //       maxwidth: dimensions
+  //     }
+  //   });
+  // }
+
+  // service.locationsaved = function()
   return service;
 
 
@@ -162,25 +174,47 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory) {
     var query = $scope.search;
     Dom_Ready_Factory.search(query)
       .success(function(data){
+        // save data to a scope variable
         $scope.json_data = data;
+
+        // grab the latitude and longitude values and store them in scope variables
         $scope.latitude = $scope.json_data[0].geometry.location.lat;
         $scope.longitude = $scope.json_data[0].geometry.location.lng;
 
+        // make a service call to create a marker and pass in the json data
         Dom_Ready_Factory.createMarker($scope.json_data);
       });
   };
 });
 
 app.controller("LocationController", function($scope, Dom_Ready_Factory) {
-  var atv = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
+  var piedmont_park = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
   var aquarium = 'ChIJGQT0RX4E9YgR3EqvqXZw1_4';
-  Dom_Ready_Factory.location()
+  Dom_Ready_Factory.location(piedmont_park)
     .success(function(results){
+      console.log(results);
       $scope.results = results.result;
-      console.log($scope.results);
+      // store the photos array in a scope variable
+      $scope.photoResults = results.result.photos;
+      // set an empty array that will store all the photo urls
+      $scope.imageUrls = [];
+
+      // loop through all the photos in $scope.photoResults
+      // grab the photo reference id and concatenate it to the imageSrc
+      for (var i = 0; i < $scope.photoResults.length; i++) {
+        var imageSrc = 'https://maps.googleapis.com/maps/api/place/photo?';
+        imageSrc += 'maxwidth=1000&';
+        imageSrc += 'key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&';
+        imageSrc += 'photoreference=';
+        imageSrc += $scope.photoResults[i].photo_reference;
+        // store the imageSrc in the imageUrls array
+        $scope.imageUrls.push(imageSrc);
+      }
+
     });
 
 });
+
 
 app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
   $scope.submitSignup = function() {
@@ -200,7 +234,7 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
         // $state.go('login');
       });
   };
-});
+})
 
 
 app.config(function($stateProvider, $urlRouterProvider) {
