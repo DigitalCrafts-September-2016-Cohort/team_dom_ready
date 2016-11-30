@@ -4,6 +4,31 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
   var service = {};
   var show_or_search = "";
 
+  $rootScope.factoryCookieData = null;
+  console.log("Printing initial cookie", $rootScope.factoryCookieData);
+  // cookie data gets passed into the factory
+  $rootScope.factoryCookieData = $cookies.getObject('cookieData');
+  console.log("Printing initial cookie", $rootScope.factoryCookieData);
+
+  console.log("I am inside the factory!");
+  if ($rootScope.factoryCookieData) {
+    console.log("I am a cookie data in the factory!");
+    // grab auth_token from the cookieData
+    $rootScope.authToken = $rootScope.factoryCookieData.auth_token;
+    // grab user information from cookieData
+    $rootScope.user_info = $rootScope.factoryCookieData.user;
+  }
+
+  $rootScope.logout = function() {
+    console.log("Entered the logout function");
+    // remove method => pass in the value of the cookie data you want to remove
+    $cookies.remove('cookieData');
+    // reset all the scope variables
+    $rootScope.factoryCookieData = null;
+    $rootScope.authToken = null;
+    $rootScope.user_info = null;
+  };
+
   service.loadMap = function() {
     var myCenter = new google.maps.LatLng(33.7833, -84.3831);
 
@@ -35,20 +60,16 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
       title: name
     });
 
-    // Zoom to 15 when marker is clicked
-    google.maps.event.addListener(marker, 'click', function() {
-      map.setZoom(15);
-      map.setCenter(marker.getPosition());
-    });
-
     var infowindow = new google.maps.InfoWindow({
       content: name,
       maxWidth: 150,
     });
 
-    // This code opens the info window on click
+    // Zoom to 15 and open the info window when marker is clicked
     google.maps.event.addListener(marker, 'click', function() {
-      infowindow.open(map,marker);
+      map.setZoom(15);
+       map.setCenter(marker.getPosition());
+       infowindow.open(map,marker);
     });
   };
 
@@ -68,23 +89,18 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
         title: name
       });
 
-      // Zoom to 15 when marker is clicked
-      google.maps.event.addListener(marker, 'click', function() {
-        map.setZoom(15);
-        map.setCenter(marker.getPosition());
-      });
-
       var infowindow = new google.maps.InfoWindow({
         content: name,
         maxWidth: 150,
       });
 
-      // This code opens the info window on click
+      // Zoom to 15 and open the info window when marker is clicked
       google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(map,marker);
+        map.setZoom(15);
+         map.setCenter(marker.getPosition());
+         infowindow.open(map,marker);
       });
     });
-
   };
 
   service.signup = function(signup_data) {
@@ -101,6 +117,19 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
       }
     });
   };
+
+  service.login = function(login_data) {
+    var url = '/api/login';
+    return $http({
+      method: 'POST',
+      url: url,
+      data: {
+        username: login_data.username,
+        password: login_data.password
+      }
+    });
+  };
+
 
   // Requests name, lat/lng of locations reviewed from the database
   service.requestMarkersInfo = function() {
@@ -141,7 +170,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
     });
   };
 
-  service.locationsaved = function()
+  // service.locationsaved = function()
   return service;
 
 
@@ -199,6 +228,31 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
         // Will uncomment this later once we create the login Controller and login.html file
         // $state.go('login');
       });
+  };
+});
+
+app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $rootScope, $cookies) {
+  $scope.submitLogin = function(){
+    var login_info = {
+      'username': $scope.username,
+      'password': $scope.password
+    };
+    Dom_Ready_Factory.login(login_info)
+    // .error(function(login) {
+    //   $scope.failed = true;
+    // })
+    .success(function(login) {
+      $cookies.putObject('cookieData', login);
+      // store user information in a $rootScope variable
+      $rootScope.user_info = login.user;
+      // store token information in a $rootScope variable
+      $rootScope.authToken = login.auth_token;
+      // redirect to home page
+      // console.log(login);
+      // console.log("hello there");
+      // console.log($rootScope.user_info.first_name);
+      $state.go('home');
+    });
   };
 });
 
