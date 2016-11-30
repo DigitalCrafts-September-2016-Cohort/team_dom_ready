@@ -89,20 +89,41 @@ def login():
 
 @app.route("/api/search")
 def api_search():
-    # 11055 Perimeter Trace East, Atlanta GA 30346
+    # Hard coded the customer_id for now.  We'll get the current user's customer_id from the database later using a token that is created at the time of login
+    customer_id = 1;
+    markers = [];
+    show_or_search = request.args.get('show_or_search')
 
-    address = request.args.get('user_query')
-    address = str(address)
-    print '\n\naddress variable %s\n\n' % address
-    print type(address)
-    # Geocoding an address
-    geocode_result = gmaps.geocode(address)
-    print "\n\n\nThis is the geocode data: %s\n\n\n" % geocode_result
-    return jsonify(geocode_result)
+    # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
+    if show_or_search == "Show":
+        # print "This is the show or search info: %s" % show_or_search
 
+        markers = db.query(
+        """
+            select
+        		name,
+            	latitude,
+            	longitude,
+            	google_places_id
+            from
+            	location,
+            	review,
+            	customer
+            where
+            	review.location_id = location.id and
+            	review.customer_id = customer.id and
+            	customer.id = $1;
+        """, customer_id).dictresult()
+        return jsonify(markers)
+    elif show_or_search == "Search":
+        address = request.args.get('user_query')
+        address = str(address)
+        # Geocoding an address
+        geocode_result = gmaps.geocode(address)
+        return jsonify(geocode_result)
 
-@app.route('/api/edit_review', methods=['POST'])
-def edit_review():
+@app.route('/api/edit', methods=['POST'])
+def edit():
 
     data = request.get_json()
     # grab customer id
@@ -115,23 +136,22 @@ def edit_review():
 
     query = db.query(
     '''
-        select
-	*
-from
-	customer
-inner join
-    review
-    on review.customer_id = customer.id
-inner join
-	location
-    on review.location_id=location.id
-inner join
-	wishlist_loc
-	on location.id = wishlist_loc.location_id where
-        	customer.id = $1
-        AND
-            location.id = $2
-
+    SELECT
+	    *
+    FROM
+    	customer
+    INNER JOIN
+        review
+        ON review.customer_id = customer.id
+    INNER JOIN
+    	location
+        ON review.location_id=location.id
+    INNER JOIN
+    	wishlist_loc
+    	ON location.id = wishlist_loc.location_id WHERE
+            	customer.id = $1
+            AND
+                location.id = $2
     ''', customer_id, location_id).dictresult()
 
 
@@ -160,7 +180,7 @@ inner join
 
         # prod_id = db.query('select * from location where id = $1', productId).dictresult()
     #  if user decided to update the review that was linked to the user originally
-elif review_exists:
+    elif review_exists:
         # update the user's review on the location
         db.update(
             'review', {
@@ -177,10 +197,9 @@ def user_profile():
 
     # the customer id
     customer_id = result.get_json()['customer_id']
-
-
-
     return "Hello"
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
