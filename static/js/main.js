@@ -70,7 +70,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   // Creates markers for all locations that have been reviewed
   service.createMarkers = function(markers, type) {
     markers.forEach(function(location) {
-      console.log("Location info inside createMarkers: ", location);
+      // console.log("Location info inside createMarkers: ", location);
       var name = location.name;
       var place_id = location.google_places_id;
       var latitude = location.latitude;
@@ -247,18 +247,27 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
       .success(function(data){
         // save data to a scope variable
         console.log('search data being returned:', data);
-        $scope.json_data = data;
-        $scope.place_id = data.result.place_id;
-        $scope.latLong = {
-          lat: data.result.geometry.location.lat,
-          lng: data.result.geometry.location.lng
-        };
-        $scope.name = data.result.name;
-
-        // make a service call to create a marker and pass in the json data
-        Dom_Ready_Factory.createMarker($scope.latLong, $scope.place_id, $scope.name);
+        $scope.data = data.results;
+        var results_length = $scope.data.length
+        if (results_length === 1) {
+          var data = $scope.data[0];
+          $scope.getSinglePlace(data);
+        }
       });
   };
+
+  $scope.getSinglePlace = function(data) {
+    $scope.json_data = data;
+    $scope.place_id = data.place_id;
+    $scope.latLong = {
+      lat: data.geometry.location.lat,
+      lng: data.geometry.location.lng
+    };
+    $scope.name = data.name;
+    // make a service call to create a marker and pass in the json data
+    Dom_Ready_Factory.createMarker($scope.latLong, $scope.place_id, $scope.name);
+  };
+
 });
 
 app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state, $rootScope) {
