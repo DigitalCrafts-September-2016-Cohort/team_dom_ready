@@ -70,9 +70,12 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   // Creates markers for all locations that have been reviewed
   service.createMarkers = function(markers, type) {
     markers.forEach(function(location) {
+      console.log("Location info inside createMarkers: ", location);
       var name = location.name;
+      var place_id = location.google_places_id;
       var latitude = location.latitude;
       var longitude = location.longitude;
+      var link = '<a id="mapPlace" href="/#/location/' + place_id + '">' + name + '</a>';
 
       var markerLatLng = {lat: latitude, lng: longitude};
       var markerType;
@@ -94,7 +97,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
       });
 
       var infowindow = new google.maps.InfoWindow({
-        content: name,
+        content: link,
         maxWidth: 150,
       });
 
@@ -245,12 +248,12 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
         // save data to a scope variable
         console.log('search data being returned:', data);
         $scope.json_data = data;
-        $scope.place_id = data[0].place_id;
+        $scope.place_id = data.result.place_id;
         $scope.latLong = {
-          lat: data[0].geometry.location.lat,
-          lng: data[0].geometry.location.lng
+          lat: data.result.geometry.location.lat,
+          lng: data.result.geometry.location.lng
         };
-        $scope.name = data[0].formatted_address;
+        $scope.name = data.result.name;
 
         // make a service call to create a marker and pass in the json data
         Dom_Ready_Factory.createMarker($scope.latLong, $scope.place_id, $scope.name);

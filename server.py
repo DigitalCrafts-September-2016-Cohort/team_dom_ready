@@ -215,6 +215,7 @@ def api_search():
         wishlist_markers = db.query(
         """
             SELECT
+                name,
         		comment,
             	customer_id,
             	location_id,
@@ -245,8 +246,11 @@ def api_search():
         address = request.args.get('user_query')
         address = str(address)
         # Geocoding an address
-        geocode_result = gmaps.geocode(address)
-        return jsonify(geocode_result)
+        geocode_address_result = gmaps.geocode(address)
+        print "\n\nGeocode info for address searched %s\n\n" % geocode_address_result
+        place_id = geocode_address_result[0]["place_id"]
+        geocode_place_id_result = gmaps.place(place_id)
+        return jsonify(geocode_place_id_result)
 
 
 @app.route('/api/location/<place_id>')
