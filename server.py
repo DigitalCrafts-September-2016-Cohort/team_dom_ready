@@ -80,7 +80,7 @@ def login():
         # Store created auth token in database
         db.insert('auth_token', token=token, customer_id=customer['id'])
         # Creates object of user information and the new auth token to return
-        loggedin = {"user": {'username': customer['username'], 'email': customer['email'], 'first_name': customer['first_name'], 'last_name': customer['last_name']}, 'auth_token': token}
+        loggedin = {"user": {'id': customer['id'], 'username': customer['username'], 'email': customer['email'], 'first_name': customer['first_name'], 'last_name': customer['last_name']}, 'auth_token': token}
         #Retuns user info and auth token in JSON format
         return jsonify(loggedin)
     else:
@@ -326,6 +326,74 @@ def location_edit():
         )
 
     return jsonify(location_id)
+
+@app.route("/api/profile", methods = ["POST"])
+def user_profile():
+
+    # the customer id
+    customer_id = result.get_json()['customer_id']
+    return "Hello"
+
+@app.route("/api/marked", methods=['POST'])
+def marked():
+
+
+    results = request.get_json();
+
+    print "I am a mark!! %s", results
+
+    marked = results['marked']
+    place_id = results['place_id']
+    user_id = results['user_info']['id']
+
+
+    # make a query to see if user has already wishlisted the location or not
+
+    query = db.query(
+    '''
+    SELECT
+	    *
+    FROM
+    	customer
+    INNER JOIN
+        wishlist_loc
+        ON wishlist_loc.customer_id = customer.id
+    INNER JOIN
+    	location
+        ON wishlist_loc.location_id=location.id
+    WHERE
+    	customer.id = $1 AND
+        location.google_places_id = $2;
+    ''', user_id, place_id).dictresult()
+
+    # make a query to grab the location id
+    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()[0]['id']
+    location_id = int(location_id)
+    print '\n\n\n'
+    print location_id
+    print '\n\n\n'
+    print query
+    print '\n\n\n'
+
+    if query != []:
+        if not marked:
+            # if it exists, delete it from the db
+            db.query('delete from wishlist_loc where wishlist_loc.location_id = $1', location_id)
+    else:
+        if marked:
+        # create a new entry in the db
+            db.insert(
+
+                    'wishlist_loc',
+                    {
+                        'customer_id': user_id,
+                        'location_id': location_id
+                    }
+
+            )
+
+    return 'Be HAPPY!!'
+
 
 
 if __name__ == "__main__":
