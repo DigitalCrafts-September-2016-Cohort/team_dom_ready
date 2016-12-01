@@ -133,12 +133,15 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     map = new google.maps.Map(document.getElementById("map"),mapOptions);
   };
 
-  service.location = function(id) {
-    var url = '/api/location/' + id;
+  service.location = function(place_id) {
+    var url = '/api/location/' + place_id;
     return $http({
       method: 'GET',
-      url: url
-    });
+      url: url,
+      params: {
+        user_id:  $rootScope.user_info.id
+    }
+  });
   };
 
   service.login = function(login_data) {
@@ -206,16 +209,17 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     });
   };
 
-  service.updateHeart = function(is_marked, place_id, user_info) {
+  service.updateHeart = function(is_marked, location_info, user_info) {
     var url = '/api/marked';
     return $http({
       method: 'POST',
       url: url,
       data: {
+        location_info: location_info,
         marked: is_marked,
-        place_id: place_id,
         user_info: user_info
       }
+
     });
   };
 
@@ -270,9 +274,9 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
   // else, set it to false
 
   // hard code user's marked
-  var isWishlisted = false;
+  // var isWishlisted = false;
 
-  $scope.isWishListed = (isWishlisted) ? isWishlisted : false;
+  // $scope.isWishListed = (isWishlisted) ? isWishlisted : false;
 
   $scope.toggleHeart = function() {
     console.log('heart status', $scope.isWishListed);
@@ -285,8 +289,18 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       // favorite it now
       $scope.isWishListed = true;
     }
-    // update the db by passing the marked value, the place id, and the user info
-    Dom_Ready_Factory.updateHeart($scope.isWishListed, $scope.place_id, $rootScope.user_info)
+    $scope.location_info = {
+      name: ($scope.name) ? $scope.name : null,
+      description: null,
+      google_places_id: $scope.place_id,
+      latitude: $scope.lat,
+      longitude: $scope.lng
+    };
+
+    console.log('location obj:', $scope.location_info);
+
+    // update the db by passing the marked value, the location info, and the user info
+    Dom_Ready_Factory.updateHeart($scope.isWishListed, $scope.location_info, $rootScope.user_info)
       .success(function() {
         console.log('it was a success updating the heart');
       });
@@ -296,11 +310,14 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
   Dom_Ready_Factory.location($stateParams.place_id)
     .success(function(results){
       console.log(results);
-      $scope.results = results.result;
-      $scope.lat = results.result.geometry.location.lat;
-      $scope.lng = results.result.geometry.location.lng;
-      $scope.place_id = results.result.place_id;
-      $scope.name = results.result.geometry.name;
+      // find out if location was wishlisted and save it to a scope variable
+      $scope.isWishListed = results[0].is_wishlisted;
+
+      $scope.results = results[0].geocode_result.result;
+      $scope.lat = $scope.results.geometry.location.lat;
+      $scope.lng = $scope.results.geometry.location.lng;
+      $scope.place_id = $scope.results.place_id;
+      $scope.name = $scope.results.geometry.name;
 
       var latLng = {lat: $scope.lat, lng: $scope.lng};
       // render a small map and create a marker for the searched location
@@ -308,7 +325,7 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       Dom_Ready_Factory.createMarker(latLng, $scope.place_id, $scope.name);
 
       // store the photos array in a scope variable
-      $scope.photoResults = results.result.photos;
+      $scope.photoResults = $scope.results.photos;
       // set an empty array that will store all the photo urls
       $scope.imageUrls = [];
 
@@ -378,7 +395,7 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
       .success(function(signup) {
         // redirect to login page for new user to login after being added to db
         // Will uncomment this later once we create the login Controller and login.html file
-        // $state.go('login');
+        $state.go('login');
       });
   };
 });
