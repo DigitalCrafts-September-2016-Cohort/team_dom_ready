@@ -243,14 +243,12 @@ def api_search():
         return jsonify(markers)
 
     elif show_or_search == "Search":
-        address = request.args.get('user_query')
-        address = str(address)
-        # Geocoding an address
-        geocode_address_result = gmaps.geocode(address)
-        print "\n\nGeocode info for address searched %s\n\n" % geocode_address_result
-        place_id = geocode_address_result[0]["place_id"]
-        geocode_place_id_result = gmaps.place(place_id)
-        return jsonify(geocode_place_id_result)
+        search = request.args.get('user_query')
+        search = str(search)
+        # Getting details from search
+        search_result = gmaps.places(search)
+        # print "\n\nGeocode info for search searched %s\n\n" % search_result
+        return jsonify(search_result)
 
 
 @app.route('/api/location/<place_id>')

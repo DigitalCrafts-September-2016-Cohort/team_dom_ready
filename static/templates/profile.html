@@ -1,5 +1,5 @@
 <div class="text-center image_div">
-  <img class="profile_image" src="/images/default-avatar.png" alt="">
+    <img class="profile_image" src="/images/default-avatar.png" alt="">
 </div>
 <h1 class="text-center">{{profile_info.customer.username}}</h1>
 <h2 class="text-center">{{profile_info.customer.first_name}} {{profile_info.customer.last_name}}</h2>
@@ -7,16 +7,16 @@
 
 <hr>
 <div class="row">
-  <div class="col-sm-5 col-sm-offset-1">
-    <h3>Wishlist</h3>
-    <ul>
-      <li ng-repeat="item in profile_info.wishlist">{{item.name}} - {{item.category}}</li>
-    </ul>
-  </div>
-  <div class="col-sm-5 col-sm-offset-1">
-    <h3>Reviews</h3>
-    <ul>
-      <li ng-repeat="item in profile_info.reviews"> {{item.name}} - {{item.rating}}/10</li>
-    </ul>
-  </div>
+    <div class="col-sm-5 col-sm-offset-1">
+        <h3>Wishlist</h3>
+        <ul>
+            <li ng-repeat="item in profile_info.wishlist">{{item.name}} - {{item.category}}</li>
+        </ul>
+    </div>
+    <div class="col-sm-5 col-sm-offset-1">
+        <h3>Reviews</h3>
+        <ul>
+            <li ng-repeat="item in profile_info.reviews"> {{item.name}} - {{item.rating}}/10</li>
+        </ul>
+    </div>
 </div>
