@@ -191,7 +191,18 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     });
   };
 
-
+  service.updateHeart = function(is_marked, place_id, user_info) {
+    var url = '/api/marked';
+    return $http({
+      method: 'POST',
+      url: url,
+      data: {
+        marked: is_marked,
+        place_id: place_id,
+        user_info: user_info
+      }
+    });
+  };
 
   return service;
 
@@ -230,9 +241,36 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
   };
 });
 
-app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state) {
+app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state, $rootScope) {
   var piedmont_park = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
   var aquarium = 'ChIJGQT0RX4E9YgR3EqvqXZw1_4';
+
+  // first, check if user has already wishlisted the location
+  // if so, set isWishListed to true
+  // else, set it to false
+
+  // hard code user's marked
+  var isWishlisted = false;
+
+  $scope.isWishListed = (isWishlisted) ? isWishlisted : false;
+
+  $scope.toggleHeart = function() {
+    console.log('heart status', $scope.isWishListed);
+    // check if a heart is favorited
+    if ($scope.isWishListed) {
+      // if it is, unfavorite it
+      $scope.isWishListed = false;
+      // if it isn't favorited
+    } else {
+      // favorite it now
+      $scope.isWishListed = true;
+    }
+    // update the db by passing the marked value, the place id, and the user info
+    Dom_Ready_Factory.updateHeart($scope.isWishListed, $scope.place_id, $rootScope.user_info)
+      .success(function() {
+        console.log('it was a success updating the heart');
+      });
+  };
 
   // pass in the desired location ID into the service function
   Dom_Ready_Factory.location($stateParams.place_id)
