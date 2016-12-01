@@ -29,12 +29,11 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-          <li><a ng-if="user_info">Welcome {{user_info.first_name}}</a></li>
+          <li><a ng-if="user_info">Welcome {{user_info.first_name}}!</a></li>
           <li><a ng-if="!user_info" ui-sref="signup">Sign Up</a></li>
           <li><a ng-if="!user_info" ui-sref="login">Login</a></li>
           <li><a ng-if="user_info" ui-sref="profile" >Profile</a></li>
           <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
-          Token: {{authToken}}
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -60,7 +59,7 @@
 
   <!-- Custom JS -->
   <script src="js/main.js"></script>
-  <script src="https://use.fontawesome.com/5be76d1045.js"></script>
+  <!-- <script src="https://use.fontawesome.com/5be76d1045.js"></script> -->
 </body>
 
 </html>

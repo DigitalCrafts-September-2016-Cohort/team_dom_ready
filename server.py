@@ -190,14 +190,14 @@ def profile_page():
 def api_search():
     # Hard coded the customer_id for now.  We'll get the current user's customer_id from the database later using a token that is created at the time of login
     customer_id = 1;
-    markers = [];
+    reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 
     # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
     if show_or_search == "Show":
         # print "This is the show or search info: %s" % show_or_search
 
-        markers = db.query(
+        reviewed_markers = db.query(
         """
             SELECT
         		name,
@@ -206,14 +206,41 @@ def api_search():
             	google_places_id
             FROM
             	location,
-            	review,
-            	customer
+            	review
             WHERE
             	review.location_id = location.id AND
-            	review.customer_id = customer.id AND
-            	customer.id = $1;
+            	review.customer_id = $1;
         """, customer_id).dictresult()
+
+        wishlist_markers = db.query(
+        """
+            SELECT
+        		comment,
+            	customer_id,
+            	location_id,
+                latitude,
+                longitude,
+            	google_places_id
+            FROM
+            	wishlist_loc,
+            	location
+            WHERE
+            	wishlist_loc.location_id = location.id AND
+            	wishlist_loc.customer_id = $1;
+        """, customer_id).dictresult()
+
+        # markers = {}
+        #
+        # markers["reviews"] = reviewed_markers
+        # markers["wishlist"] = wishlist_markers
+
+        markers = {
+            'reviews': reviewed_markers,
+            'wishlist': wishlist_markers
+        }
+        print markers
         return jsonify(markers)
+
     elif show_or_search == "Search":
         address = request.args.get('user_query')
         address = str(address)
@@ -366,6 +393,7 @@ def marked():
             )
 
     return 'Be HAPPY!!'
+
 
 
 if __name__ == "__main__":

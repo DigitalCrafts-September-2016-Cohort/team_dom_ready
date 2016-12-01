@@ -1,21 +1,35 @@
 <h2>Hello from the search.html file</h2>
 
 <div>
-  <form class="navbar-form navbar-left" ng-submit="submitSearch()">
-    <div class="form-group">
-      <input type="text" ng-model="search" class="form-control search" placeholder="Search">
+    <form class="navbar-form navbar-left" ng-submit="submitSearch()">
+        <div class="form-group">
+            <input type="text" ng-model="search" class="form-control search" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+
+    <div id="map" style="width:900px; height:580px;"></div>
+
+    <div class="row">
+        <h2>Wishlist</h2>
+        <div class="wishlist col-sm-6">
+            <ul>
+                <li ng-repeat="place in wishlist">
+                    <p>{{place.comment}}</p>
+                    <a href="/#/location/{{place.google_places_id}}">See info</a>
+                </li>
+            </ul>
+        </div>
+
+        <h2>Reviews</h2>
+        <div class="reviews col-sm-6">
+            <ul>
+                <li ng-repeat="place in reviews">
+                    <p>{{place.name}}</p>
+                    <a href="/#/location/{{place.google_places_id}}">See info</a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <button type="submit" class="btn btn-default">Submit</button>
-  </form>
 
-  <div id="map" style="width:900px; height:580px;"></div>
-
-  <div class="wishlist">
-    <ul>
-      <li>wishlist</li>
-      <li>locations</li>
-      <li>go</li>
-      <li>here</li>
-    </ul>
-  </div>
 </div>
