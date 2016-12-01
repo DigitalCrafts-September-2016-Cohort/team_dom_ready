@@ -80,12 +80,111 @@ def login():
         # Store created auth token in database
         db.insert('auth_token', token=token, customer_id=customer['id'])
         # Creates object of user information and the new auth token to return
-        loggedin = {"user": {'username': customer['username'], 'email': customer['email'], 'first_name': customer['first_name'], 'last_name': customer['last_name']}, 'authtoken': token}
+        loggedin = {"user": {'username': customer['username'], 'email': customer['email'], 'first_name': customer['first_name'], 'last_name': customer['last_name']}, 'auth_token': token}
         #Retuns user info and auth token in JSON format
         return jsonify(loggedin)
     else:
         # If passwords don't match
         return 'login failed', 401
+
+@app.route("/api/profile")
+def profile_page():
+    profile_information = {}
+    profile_token = request.args.get('profile_token')
+    print "\n\nI'm a token %s\n\n" % profile_token
+
+    if profile_token:
+        customer_id = db.query(
+        """
+            SELECT
+            	customer_id
+            from
+            	auth_token
+            where
+            	token = $1
+        """, profile_token).dictresult()[0]
+
+        customer_id = customer_id["customer_id"]
+
+        print "Customer ID is: %s" % customer_id
+
+        customer_profile = db.query(
+        """
+            SELECT
+                *
+            from
+                customer
+            where
+                id = $1
+        """, customer_id
+        ).dictresult()[0]
+
+        del customer_profile["password"]
+
+        print "\n\ncustomer_profile is: %s\n\n" % customer_profile
+
+        reviews = db.query(
+        """
+            SELECT
+                location.id,
+                location.name,
+                location.google_places_id,
+                review.rating,
+                customer.id
+            from
+                location
+            inner join
+                review
+            on
+                review.location_id = location.id
+            inner join
+                customer
+            on
+                customer.id = review.customer_id
+            and
+            customer.id = $1;
+        """, customer_id).dictresult()
+
+        wishlist = db.query(
+        """
+            SELECT
+                customer.id,
+                location.id,
+                location.name,
+                location.google_places_id,
+                wishlist_loc.location_id,
+                category.category
+            from
+                customer
+            inner join
+                wishlist_loc
+            on
+                customer.id = wishlist_loc.customer_id
+            inner join
+                location
+            on
+                location.id = wishlist_loc.location_id
+            inner join
+                loc_category
+            on
+                loc_category.location_id = location.id
+            inner join
+                category
+            on
+                category.id = loc_category.category_id
+            and
+               customer.id = $1;
+        """, customer_id).dictresult()
+
+        profile_information["customer"] = customer_profile
+        profile_information["reviews"] = reviews
+        profile_information["wishlist"] = wishlist
+
+        print "\n\nProfile information is: %s\n\n" % profile_information
+
+        return jsonify(profile_information)
+
+
 
 @app.route("/api/search")
 def api_search():
