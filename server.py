@@ -222,9 +222,9 @@ def api_search():
         return jsonify(geocode_result)
 
 
-@app.route('/api/location')
-def location():
-    place_id = request.args.get('place_id')
+@app.route('/api/location/<place_id>')
+def location(place_id):
+    # place_id = request.args.get('place_id')
     place_id = str(place_id)
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)

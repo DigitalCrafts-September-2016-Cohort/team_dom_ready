@@ -1,75 +1,57 @@
 var app = angular.module('dom_ready', ['ui.router', 'ngCookies']);
 
-app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
+// ====================
+// SERVICES
+// ====================
+app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
+
+  // SERVICE VARIABLES
+
   var service = {};
   var show_or_search = "";
 
   $rootScope.factoryCookieData = null;
-  console.log("Printing initial cookie", $rootScope.factoryCookieData);
   // cookie data gets passed into the factory
   $rootScope.factoryCookieData = $cookies.getObject('cookieData');
-  console.log("Printing initial cookie", $rootScope.factoryCookieData);
 
-  console.log("I am inside the factory!");
   if ($rootScope.factoryCookieData) {
-    console.log("I am a cookie data in the factory!");
     // grab auth_token from the cookieData
     $rootScope.authToken = $rootScope.factoryCookieData.auth_token;
     // grab user information from cookieData
     $rootScope.user_info = $rootScope.factoryCookieData.user;
   }
 
-  $rootScope.logout = function() {
-    console.log("Entered the logout function");
-    // remove method => pass in the value of the cookie data you want to remove
-    $cookies.remove('cookieData');
-    // reset all the scope variables
-    $rootScope.factoryCookieData = null;
-    $rootScope.authToken = null;
-    $rootScope.user_info = null;
-  };
-
-  service.loadMap = function() {
-    var myCenter = new google.maps.LatLng(33.7833, -84.3831);
-
-    var mapOptions = {
-      center: myCenter,
-      zoom: 11,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-    };
-
-    // make map a global variable inside app.factory so other services can use it
-    map = new google.maps.Map(document.getElementById("map"),mapOptions);
-  };
+  // SERVICE FUNCTIONS
 
   // Creates one marker when searching for an address and / or business
-  service.createMarker = function(json_data) {
-    // console.log("JSON data: ", json_data);
-    service.loadMap();
-
-    var name = json_data[0].formatted_address;
-    var latitude = json_data[0].geometry.location.lat;
-    var longitude = json_data[0].geometry.location.lng;
-
-    var markerLatLng = {lat: latitude, lng: longitude};
+  service.createMarker = function(latLongObj, place_id, name) {
+    console.log('Can I do anything???');
+    console.log("place id::", place_id);
 
     var marker = new google.maps.Marker({
-      position: markerLatLng,
+      position: latLongObj,
       map: map,
       // draggable: true,
       title: name
+      // myURL: '/location/ChIJHTE5_zgE9YgRTkiCMTUH8hU'
     });
 
+    var link = '<a id="mapPlace" href="/#/location/' + place_id + '">' + name + '</a>';
+
     var infowindow = new google.maps.InfoWindow({
-      content: name,
-      maxWidth: 150,
+      content: link,
+      maxWidth: 150
     });
+
+    // google.maps.event.addListener(marker, "click", function() {
+    //   window.open(this.myURL, "_self");
+    // });
 
     // Zoom to 15 and open the info window when marker is clicked
     google.maps.event.addListener(marker, 'click', function() {
       map.setZoom(15);
-       map.setCenter(marker.getPosition());
-       infowindow.open(map,marker);
+      map.setCenter(marker.getPosition());
+      infowindow.open(map,marker);
     });
   };
 
@@ -103,18 +85,34 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
     });
   };
 
-  service.signup = function(signup_data) {
-    var url = '/api/signup';
+  service.loadMap = function(latLongObj, zoomAmt) {
+    // check if there is an object with latitude and longitude coordinates being passed
+    if (latLongObj) {
+      var myCenter = new google.maps.LatLng(latLongObj.lat, latLongObj.lng);
+    }
+    else {
+      var myCenter = new google.maps.LatLng(33.7833, -84.3831);
+    }
+    if (zoomAmt === 'close') {
+      zoomAmt = 14;
+    } else if (zoomAmt === 'far') {
+      zoomAmt = 11;
+    }
+    var mapOptions = {
+      center: myCenter,
+      zoom: zoomAmt,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+    };
+
+    // make map a global variable inside app.factory so other services can use it
+    map = new google.maps.Map(document.getElementById("map"),mapOptions);
+  };
+
+  service.location = function(id) {
+    var url = '/api/location/' + id;
     return $http({
-      method: 'POST',
-      url: url,
-      data: {
-        username: signup_data.username,
-        email: signup_data.email,
-        first_name: signup_data.first_name,
-        last_name: signup_data.last_name,
-        password: signup_data.password
-      }
+      method: 'GET',
+      url: url
     });
   };
 
@@ -128,6 +126,16 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
         password: login_data.password
       }
     });
+  };
+
+  $rootScope.logout = function() {
+    console.log("Entered the logout function");
+    // remove method => pass in the value of the cookie data you want to remove
+    $cookies.remove('cookieData');
+    // reset all the scope variables
+    $rootScope.factoryCookieData = null;
+    $rootScope.authToken = null;
+    $rootScope.user_info = null;
   };
 
   service.profile = function() {
@@ -168,29 +176,37 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope) {
     });
   };
 
-  service.location = function(id) {
-    var url = '/api/location';
+  service.signup = function(signup_data) {
+    var url = '/api/signup';
     return $http({
-      method: 'GET',
+      method: 'POST',
       url: url,
-      params: {
-        place_id: id
+      data: {
+        username: signup_data.username,
+        email: signup_data.email,
+        first_name: signup_data.first_name,
+        last_name: signup_data.last_name,
+        password: signup_data.password
       }
     });
   };
+
+
 
   return service;
 
 });
 
-app.controller("HomeController", function($scope, Dom_Ready_Factory) {
-
+// ====================
+// CONTROLLERS
+// ====================
+app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
   // instantly load the map on home page
-  Dom_Ready_Factory.loadMap();
+  Dom_Ready_Factory.loadMap(null, 'far');
 
   Dom_Ready_Factory.requestMarkersInfo()
     .success(function(markers_info) {
-      Dom_Ready_Factory.createMarkers(markers_info);
+      Dom_Ready_Factory.loadMap(null, 'far');
     });
 
   // Will do a request to the factory to get information to show in the api/search address
@@ -199,25 +215,40 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory) {
     Dom_Ready_Factory.search(query)
       .success(function(data){
         // save data to a scope variable
+        console.log('search data being returned:', data);
         $scope.json_data = data;
-
-        // grab the latitude and longitude values and store them in scope variables
-        $scope.latitude = $scope.json_data[0].geometry.location.lat;
-        $scope.longitude = $scope.json_data[0].geometry.location.lng;
+        $scope.place_id = data[0].place_id;
+        $scope.latLong = {
+          lat: data[0].geometry.location.lat,
+          lng: data[0].geometry.location.lng
+        };
+        $scope.name = data[0].formatted_address;
 
         // make a service call to create a marker and pass in the json data
-        Dom_Ready_Factory.createMarker($scope.json_data);
+        Dom_Ready_Factory.createMarker($scope.latLong, $scope.place_id, $scope.name);
       });
   };
 });
 
-app.controller("LocationController", function($scope, Dom_Ready_Factory) {
+app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state) {
   var piedmont_park = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
   var aquarium = 'ChIJGQT0RX4E9YgR3EqvqXZw1_4';
-  Dom_Ready_Factory.location(piedmont_park)
+
+  // pass in the desired location ID into the service function
+  Dom_Ready_Factory.location($stateParams.place_id)
     .success(function(results){
       console.log(results);
       $scope.results = results.result;
+      $scope.lat = results.result.geometry.location.lat;
+      $scope.lng = results.result.geometry.location.lng;
+      $scope.place_id = results.result.place_id;
+      $scope.name = results.result.geometry.name;
+
+      var latLng = {lat: $scope.lat, lng: $scope.lng};
+      // render a small map and create a marker for the searched location
+      Dom_Ready_Factory.loadMap(latLng, 'close');
+      Dom_Ready_Factory.createMarker(latLng, $scope.place_id, $scope.name);
+
       // store the photos array in a scope variable
       $scope.photoResults = results.result.photos;
       // set an empty array that will store all the photo urls
@@ -234,31 +265,9 @@ app.controller("LocationController", function($scope, Dom_Ready_Factory) {
         // store the imageSrc in the imageUrls array
         $scope.imageUrls.push(imageSrc);
       }
-
     });
-
 });
 
-
-app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
-  $scope.submitSignup = function() {
-    // store user signup info in a scope object
-    $scope.signup_data = {
-      username: $scope.username,
-      email: $scope.email,
-      first_name: $scope.first_name,
-      last_name: $scope.last_name,
-      password: $scope.password
-    };
-    // pass the user signup data object to be processed
-    Dom_Ready_Factory.signup($scope.signup_data)
-      .success(function(signup) {
-        // redirect to login page for new user to login after being added to db
-        // Will uncomment this later once we create the login Controller and login.html file
-        // $state.go('login');
-      });
-  };
-});
 
 app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $rootScope, $cookies) {
   $scope.submitLogin = function(){
@@ -267,9 +276,6 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $r
       'password': $scope.password
     };
     Dom_Ready_Factory.login(login_info)
-    // .error(function(login) {
-    //   $scope.failed = true;
-    // })
     .success(function(login) {
       $cookies.putObject('cookieData', login);
       console.log("Cookie data: ", login);
@@ -299,6 +305,31 @@ app.controller("ProfileController", function($scope, Dom_Ready_Factory, $rootSco
 });
 
 
+app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
+  $scope.submitSignup = function() {
+    // store user signup info in a scope object
+    $scope.signup_data = {
+      username: $scope.username,
+      email: $scope.email,
+      first_name: $scope.first_name,
+      last_name: $scope.last_name,
+      password: $scope.password
+    };
+    // pass the user signup data object to be processed
+    Dom_Ready_Factory.signup($scope.signup_data)
+      .success(function(signup) {
+        // redirect to login page for new user to login after being added to db
+        // Will uncomment this later once we create the login Controller and login.html file
+        // $state.go('login');
+      });
+  };
+});
+
+
+
+// ====================
+// STATES
+// ====================
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
   .state({
@@ -308,10 +339,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
     controller: "HomeController"
   })
   .state({
-    name: "signup",
-    url: "/signup",
-    templateUrl: "templates/signup.html",
-    controller: "SignUpController"
+    name: "location",
+    url: "/location/{place_id}",
+    templateUrl: "templates/location.html",
+    controller: "LocationController"
   })
   .state({
     name: "login",
@@ -320,16 +351,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
     controller: "LoginController"
   })
   .state({
+    name: "signup",
+    url: "/signup",
+    templateUrl: "templates/signup.html",
+    controller: "SignUpController"
+  })
+  .state({
     name: "profile",
     url: "/profile",
     templateUrl: "templates/profile.html",
     controller: "ProfileController"
-  })
-  .state({
-    name: "location",
-    url: "/location",
-    templateUrl: "templates/location.html",
-    controller: "LocationController"
   });
 
   $urlRouterProvider.otherwise('/');
