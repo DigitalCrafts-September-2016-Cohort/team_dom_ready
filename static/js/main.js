@@ -10,6 +10,8 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   var service = {};
   var show_or_search = "";
 
+  // ROOTSCOPE
+
   $rootScope.factoryCookieData = null;
   // cookie data gets passed into the factory
   $rootScope.factoryCookieData = $cookies.getObject('cookieData');
@@ -20,6 +22,16 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     // grab user information from cookieData
     $rootScope.user_info = $rootScope.factoryCookieData.user;
   }
+
+  $rootScope.logout = function() {
+    console.log("Entered the logout function");
+    // remove method => pass in the value of the cookie data you want to remove
+    $cookies.remove('cookieData');
+    // reset all the scope variables
+    $rootScope.factoryCookieData = null;
+    $rootScope.authToken = null;
+    $rootScope.user_info = null;
+  };
 
   // SERVICE FUNCTIONS
 
@@ -56,18 +68,28 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   // Creates markers for all locations that have been reviewed
-  service.createMarkers = function(markers) {
+  service.createMarkers = function(markers, type) {
     markers.forEach(function(location) {
       var name = location.name;
       var latitude = location.latitude;
       var longitude = location.longitude;
 
       var markerLatLng = {lat: latitude, lng: longitude};
+      var markerType;
+
+      if (type === 'review') {
+        pinColor = 'FFF000';
+      }
+      else if (type === 'wishlist') {
+        pinColor = '4a82f1';
+      }
 
       var marker = new google.maps.Marker({
         position: markerLatLng,
         map: map,
         // draggable: true,
+        // opacity: 0.2,
+        icon: 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2%7C' + pinColor,
         title: name
       });
 
@@ -128,16 +150,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     });
   };
 
-  $rootScope.logout = function() {
-    console.log("Entered the logout function");
-    // remove method => pass in the value of the cookie data you want to remove
-    $cookies.remove('cookieData');
-    // reset all the scope variables
-    $rootScope.factoryCookieData = null;
-    $rootScope.authToken = null;
-    $rootScope.user_info = null;
-  };
-
   service.profile = function() {
     // console.log("Profile data inside the factory: ", profile);
     var url = '/api/profile';
@@ -191,8 +203,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     });
   };
 
-
-
   return service;
 
 });
@@ -206,7 +216,12 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
 
   Dom_Ready_Factory.requestMarkersInfo()
     .success(function(markers_info) {
+      console.log(markers_info);
+      $scope.wishlist = markers_info.wishlist;
+      $scope.reviews = markers_info.reviews;
       Dom_Ready_Factory.loadMap(null, 'far');
+      Dom_Ready_Factory.createMarkers($scope.wishlist, 'wishlist');
+      Dom_Ready_Factory.createMarkers($scope.reviews, 'review');
     });
 
   // Will do a request to the factory to get information to show in the api/search address
@@ -351,16 +366,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
     controller: "LoginController"
   })
   .state({
-    name: "signup",
-    url: "/signup",
-    templateUrl: "templates/signup.html",
-    controller: "SignUpController"
-  })
-  .state({
     name: "profile",
     url: "/profile",
     templateUrl: "templates/profile.html",
     controller: "ProfileController"
+  })
+  .state({
+    name: "signup",
+    url: "/signup",
+    templateUrl: "templates/signup.html",
+    controller: "SignUpController"
   });
 
   $urlRouterProvider.otherwise('/');
