@@ -215,7 +215,6 @@ def api_search():
         wishlist_markers = db.query(
         """
             SELECT
-        		comment,
             	customer_id,
             	location_id,
                 latitude,
@@ -253,9 +252,47 @@ def api_search():
 def location(place_id):
     # place_id = request.args.get('place_id')
     place_id = str(place_id)
+    print "AHHHHHHH"
+    user_id = request.args.get('user_id')
+    # user_id = int(user_id)
+
+    print user_id
+    # make a query to see if user has already wishlisted the location or not
+
+    query = db.query(
+    '''
+    SELECT
+	    *
+    FROM
+    	customer
+    INNER JOIN
+        wishlist_loc
+        ON wishlist_loc.customer_id = customer.id
+    INNER JOIN
+    	location
+        ON wishlist_loc.location_id=location.id
+    WHERE
+    	customer.id = $1 AND
+        location.google_places_id = $2;
+    ''', user_id, place_id).dictresult()
+
+    if query == []:
+        is_wishlisted = False
+    else:
+        is_wishlisted = True
+
+
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)
-    return jsonify(geocode_result)
+    return jsonify([
+        {
+        'geocode_result': geocode_result,
+        'is_wishlisted': is_wishlisted
+        }
+    ])
+
+
+    # geocode_result, {'is_wishlisted': is_wishlisted})
 
 @app.route('/api/location/edit', methods=['POST'])
 def location_edit():
@@ -343,7 +380,11 @@ def marked():
     print "I am a mark!! %s", results
 
     marked = results['marked']
-    place_id = results['place_id']
+    place_id = results['location_info']['google_places_id']
+    name = results['location_info']['name']
+    description = results['location_info']['description']
+    lat = results['location_info']['latitude']
+    lng = results['location_info']['longitude']
     user_id = results['user_info']['id']
 
 
@@ -367,8 +408,14 @@ def marked():
     ''', user_id, place_id).dictresult()
 
     # make a query to grab the location id
-    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()[0]['id']
-    location_id = int(location_id)
+    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
+
+    # if location exists, save it to a variable
+    if location_id != []:
+        location_id = int(location_id[0]['id'])
+    else:
+        pass
+
     print '\n\n\n'
     print location_id
     print '\n\n\n'
@@ -376,10 +423,28 @@ def marked():
     print '\n\n\n'
 
     if query != []:
+
         if not marked:
             # if it exists, delete it from the db
             db.query('delete from wishlist_loc where wishlist_loc.location_id = $1', location_id)
     else:
+        # if location does not exist in database
+        if location_id == []:
+            # create the location
+            db.insert(
+                'location',
+                {
+                    'name': name,
+                    'description': description,
+                    'google_places_id': place_id,
+                    'latitude': lat,
+                    'longitude': lng
+                }
+
+            )
+            # make a query to grab the location id
+            location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()[0]['id']
+            location_id = int(location_id)
         if marked:
         # create a new entry in the db
             db.insert(
