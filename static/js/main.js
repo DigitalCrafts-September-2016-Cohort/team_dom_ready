@@ -213,13 +213,30 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
 
   service.updateHeart = function(is_marked, location_info, user_info) {
     console.log("Location info for my heart: ", location_info);
-    var url = '/api/marked';
+    console.log('is heart marked???', is_marked);
+
+    var url = '/api/location/edit/wishlisted';
     return $http({
       method: 'POST',
       url: url,
       data: {
         location_info: location_info,
         marked: is_marked,
+        user_info: user_info
+      }
+
+    });
+  };
+
+  service.updateReviewInfo = function(review_info, location_info, user_info) {
+    console.log("Updated Review: ", location_info);
+    var url = '/api/location/edit/review';
+    return $http({
+      method: 'POST',
+      url: url,
+      data: {
+        review_info: review_info,
+        location_info: location_info,
         user_info: user_info
       }
 
@@ -283,38 +300,38 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
 });
 
 app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state, $rootScope) {
-  var piedmont_park = 'ChIJHTE5_zgE9YgRTkiCMTUH8hU';
-  var aquarium = 'ChIJGQT0RX4E9YgR3EqvqXZw1_4';
 
-  // first, check if user has already wishlisted the location
-  // if so, set isWishListed to true
-  // else, set it to false
-
-  // hard code user's marked
-  // var isWishlisted = false;
-
-  // $scope.isWishListed = (isWishlisted) ? isWishlisted : false;
+  $scope.updateReview = function() {
+    console.log('rating in review is:', $scope.reviewRating);
+    if ($scope.isReviewed) {
+      $scope.isReviewed = false;
+    } else {
+      $scope.isReviewed = true;
+    }
+    $scope.reviewInfo = {
+      title: $scope.reviewTitle,
+      review: $scope.reviewBody,
+      rating: $scope.reviewRating
+    };
+    console.log('review info obj::', $scope.reviewInfo);
+    // update the db by passing the review info, the location info, and the user info
+    Dom_Ready_Factory.updateReviewInfo($scope.reviewInfo, $scope.location_info, $rootScope.user_info);
+  };
 
   $scope.toggleHeart = function() {
     console.log('heart status', $scope.isWishListed);
-    // check if a heart is favorited
+    // check if a heart is wishlisted
     if ($scope.isWishListed) {
       // if it is, unfavorite it
       $scope.isWishListed = false;
-      // if it isn't favorited
+      // if it isn't wishlisted
     } else {
-      // favorite it now
+      // wishlist it now
       $scope.isWishListed = true;
     }
-    $scope.location_info = {
-      name: ($scope.name) ? $scope.name : null,
-      description: null,
-      google_places_id: $scope.place_id,
-      latitude: $scope.lat,
-      longitude: $scope.lng
-    };
 
     console.log('location obj:', $scope.location_info);
+    console.log('wish listed????:', $scope.isWishListed);
 
     // update the db by passing the marked value, the location info, and the user info
     Dom_Ready_Factory.updateHeart($scope.isWishListed, $scope.location_info, $rootScope.user_info)
@@ -329,13 +346,28 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       console.log("Here are the location obj results:", results);
       // find out if location was wishlisted and save it to a scope variable
       $scope.isWishListed = results[0].is_wishlisted;
+      $scope.review_info = results[0].review_info;
+      $scope.isReviewed = ($scope.review_info) ? true : false;
 
+      $scope.reviewTitle = ($scope.review_info) ? $scope.review_info.title : "";
+      $scope.reviewRating = ($scope.review_info) ? $scope.review_info.rating : 0;
+      $scope.reviewBody = ($scope.review_info) ? $scope.review_info.review : 'Write a review!';
+
+      console.log('review rating', typeof $scope.reviewRating);
       $scope.results = results[0].geocode_result.result;
       $scope.lat = $scope.results.geometry.location.lat;
       $scope.lng = $scope.results.geometry.location.lng;
       $scope.place_id = $scope.results.place_id;
       $scope.name = $scope.results.name;
       console.log("My name is...", $scope.name);
+
+      $scope.location_info = {
+        name: ($scope.name) ? $scope.name : null,
+        description: null,
+        google_places_id: $scope.place_id,
+        latitude: $scope.lat,
+        longitude: $scope.lng
+      };
 
       var latLng = {lat: $scope.lat, lng: $scope.lng};
       // render a small map and create a marker for the searched location

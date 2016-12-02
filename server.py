@@ -189,7 +189,7 @@ def profile_page():
 @app.route("/api/search")
 def api_search():
     # Hard coded the customer_id for now.  We'll get the current user's customer_id from the database later using a token that is created at the time of login
-    customer_id = 1;
+    customer_id = 2;
     reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 
@@ -289,97 +289,168 @@ def location(place_id):
     else:
         is_wishlisted = True
 
+    # use google_places_id to make a query to grab location id
+    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
+
+    # check if location exists
+    if location_id == []:
+        review_info = None
+    else:
+
+        # first, grab the location_id and convert into integer
+        location_id = location_id[0]['id']
+        location_id = int(location_id)
+
+        # make a query to grab the review for that location
+        review_id = db.query(
+        '''
+        SELECT
+            review.id
+        FROM
+            customer
+        INNER JOIN
+            review
+            ON review.customer_id = customer.id
+        INNER JOIN
+            location
+            ON review.location_id=location.id
+        WHERE
+            customer.id = $1
+                AND
+                    location.id = $2
+        ''', user_id, location_id).dictresult()
+
+        # if review does exist
+        if review_id != []:
+
+            # grab the review id and convert into integer
+            review_id = review_id[0]['id']
+            review_id = int(review_id)
+
+            # make a query to grab the review info
+            review_info = db.query(
+            '''
+            SELECT
+                review.title,
+                review.review,
+                review.rating
+            FROM
+                review
+            WHERE
+                review.id = $1
+            ''', review_id).dictresult()[0]
+        else:
+            review_info = None
+
+    print 'review info is .... %s' % review_info
+
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)
-
 
     return jsonify([
         {
         'geocode_result': geocode_result,
-        'is_wishlisted': is_wishlisted
+        'is_wishlisted': is_wishlisted,
+        'review_info': review_info
         }
     ])
 
-@app.route('/api/location/edit', methods=['POST'])
+@app.route('/api/location/edit/review', methods=['POST'])
 def location_edit():
 
-    data = request.get_json()
-    # grab customer id
-    customer_id = 2
-    location_id = 1
+    results = request.get_json();
 
-    # grab the user data being sent here
+    print 'edit me???!!!!:? %s' , results
 
-    # check if placeid exist in database
+    review_info = results['review_info']
+    review = review_info['review']
+    review_title = review_info['title']
+    review_rating = review_info['rating']
 
-    query = db.query(
-    '''
-    SELECT
-	    *
-    FROM
-    	customer
-    INNER JOIN
-        review
-        ON review.customer_id = customer.id
-    INNER JOIN
-    	location
-        ON review.location_id=location.id
-    INNER JOIN
-    	wishlist_loc
-    	ON location.id = wishlist_loc.location_id WHERE
-            	customer.id = $1
-            AND
-                location.id = $2
-    ''', customer_id, location_id).dictresult()
+    place_id = results['location_info']['google_places_id']
+    place_id = results['location_info']['google_places_id']
+    name = results['location_info']['name']
+    description = results['location_info']['description']
+    lat = results['location_info']['latitude']
+    lng = results['location_info']['longitude']
+    customer_id = int(results['user_info']['id'])
 
+    # use google_places_id to make a query to grab location id
+    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
 
-    print query
-    # check if there is a review
-    if query == []:
-        review_exists = False
-    else:
-        review_exists = True
-
-    print "is saved %s" % is_saved
-
-    # if user has chosen to review the location when it hasn't been reviewed already
-    if not review_exists:
-
+    if location_id == []:
+        # create a new location in the db
         db.insert(
-            'review', {
-                'title': data.title,
-                'review': data.review,
-                'rating': data.rating,
-                'customer_id': data.customer_id,
-                'location_id': data.location_id
+            'location',
+            {
+                'name': name,
+                'description': description,
+                'google_places_id': place_id,
+                'latitude': lat,
+                'longitude': lng
             }
-        )
-        # then we want to make a link between location and user
 
-        # prod_id = db.query('select * from location where id = $1', productId).dictresult()
-    #  if user decided to update the review that was linked to the user originally
-    elif review_exists:
-        # update the user's review on the location
-        db.update(
-            'review', {
-                'title': data.title,
-                'review': data.review,
-                'rating': data.rating
-            }
         )
+    else:
+
+        # first, grab the location_id and convert into integer
+        location_id = location_id[0]['id']
+        location_id = int(location_id)
+
+        # make a query to check if review exists
+        review_query = db.query(
+        '''
+        SELECT
+    	    review.id
+        FROM
+        	customer
+        INNER JOIN
+            review
+            ON review.customer_id = customer.id
+        INNER JOIN
+        	location
+            ON review.location_id=location.id
+        WHERE
+            customer.id = $1
+                AND
+                    location.id = $2
+        ''', customer_id, location_id).dictresult()
+
+        print 'review query exists: %r', review_query
+
+        if review_query == []:
+            # create a new review
+            db.insert(
+                    'review', {
+                        'title': review_title,
+                        'review': review,
+                        'rating': review_rating,
+                        'customer_id': customer_id,
+                        'location_id': location_id
+                    }
+                )
+        else:
+
+            review_id = review_query[0]['id']
+            review_id = int(review_id)
+
+            # update the review in the db
+            db.update(
+                'review', {
+                    'id': review_id,
+                    'title': review_title,
+                    'review': review,
+                    'rating': review_rating,
+                    'customer_id': customer_id,
+                    'location_id': location_id
+                }
+            )
 
     return jsonify(location_id)
 
-@app.route("/api/profile", methods = ["POST"])
-def user_profile():
-
-    # the customer id
-    customer_id = result.get_json()['customer_id']
-    return "Hello"
-
-@app.route("/api/marked", methods=['POST'])
+@app.route("/api/location/edit/wishlisted", methods=['POST'])
 def marked():
-
+    print 'did i arrive in the wishlisted route???'
 
     results = request.get_json();
 
@@ -393,73 +464,45 @@ def marked():
     lng = results['location_info']['longitude']
     user_id = results['user_info']['id']
 
-
-    # make a query to see if user has already wishlisted the location or not
-
-    query = db.query(
-        '''
-        SELECT
-    	    *
-        FROM
-        	customer
-        INNER JOIN
-            wishlist_loc
-            ON wishlist_loc.customer_id = customer.id
-        INNER JOIN
-        	location
-            ON wishlist_loc.location_id=location.id
-        WHERE
-        	customer.id = $1 AND
-            location.google_places_id = $2;
-        ''', user_id, place_id).dictresult()
-
     # make a query to grab the location id
     location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
 
-    # if location exists, save it to a variable
-    if location_id != []:
-        location_id = int(location_id[0]['id'])
+    if location_id == []:
+        # create a new location in the db
+                db.insert(
+                    'location',
+                    {
+                        'name': name,
+                        'description': description,
+                        'google_places_id': place_id,
+                        'latitude': lat,
+                        'longitude': lng
+                    }
+
+                )
+    # if the location already exists in the database
     else:
         pass
 
-    print '\n\n\n'
-    print location_id
-    print '\n\n\n'
-    print query
-    print '\n\n\n'
+    # make a query to grab the location id
+    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
+    location_id = location_id[0]['id']
+    location_id = int(location_id)
 
-    if query != []:
+    # if the location is wishlisted
+    if marked:
 
-        if not marked:
-            # if it exists, delete it from the db
-            db.query('delete from wishlist_loc where wishlist_loc.location_id = $1', location_id)
+        # add location to the wishlist
+        db.insert(
+                    'wishlist_loc',
+                    {
+                        'customer_id': user_id,
+                        'location_id': location_id
+                    }
+                )
     else:
-        # if location does not exist in database
-        if location_id == []:
-            # create the location
-            db.insert(
-                'location',
-                {
-                    'name': name,
-                    'description': description,
-                    'google_places_id': place_id,
-                    'latitude': lat,
-                    'longitude': lng
-                }
-
-            )
-            # make a query to grab the location id
-            location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()[0]['id']
-            location_id = int(location_id)
-        if marked:
-        # create a new entry in the db
-            db.insert(
-                'wishlist_loc',
-                {
-                    'customer_id': user_id,
-                    'location_id': location_id
-                }
-            )
+        # remove the location from the wishlist
+        db.query('delete from wishlist_loc where wishlist_loc.location_id = $1', location_id)
 
     return 'Be HAPPY!!'
 

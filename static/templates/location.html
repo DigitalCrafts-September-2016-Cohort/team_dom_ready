@@ -11,8 +11,26 @@
 <p>Website: {{results.website}}</p>
 <p>Phone: {{results.formatted_phone_number}}</p>
 <p>{{locationDescription}}</p>
-<h2>{{reviewTitle}}</h2>
-<p>{{reviewBody}}</p>
+<!-- Save -->
+<div ng-show="!isReviewed" class="">
+  <select name="{{reviewRating}}" ng-model="reviewRating">
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+  </select>
+  <input type="text" ng-model="reviewTitle" value="{{reviewTitle}}">
+  <textarea name="name" rows="8" cols="40" ng-model="reviewBody">{{reviewBody}}</textarea>
+  <input type="button" ng-click="updateReview()" value="Submit">
+</div>
+<!-- Edit -->
+<div ng-show="isReviewed" class="">
+  <h2>{{reviewTitle}}</h2>
+  <p>rating: {{reviewRating}} / 5</p>
+  <p>{{reviewBody}}</p>
+  <input type="button" ng-click="updateReview()" value="Edit">
+</div>
 
 <div ng-repeat="image in imageUrls">
   <img ng-src="{{image}}" alt="hello">
