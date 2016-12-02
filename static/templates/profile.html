@@ -9,17 +9,16 @@
         <h2 class="text-center">{{profile_info.customer.first_name}} {{profile_info.customer.last_name}}</h2>
         <h4 class="text-center">{{profile_info.customer.email}}</h4>
     </div>
-
     <div class="row">
-    <hr>
-        <div class="col-sm-6 wishlist">
+    <hr ng-if="profile_info.wishlist.length !== 0">
+        <div class="col-sm-6 wishlist" ng-if="profile_info.wishlist.length !== 0">
             <h3>Wishlist:</h3>
             <ul>
                 <li ng-repeat="item in profile_info.wishlist">{{item.name}}</li>
             </ul>
         </div>
-    <hr>
-        <div class="col-sm-6 reviews">
+    <hr ng-if="profile_info.reviews.length !== 0">
+        <div class="col-sm-6 reviews" ng-if="profile_info.reviews.length !== 0">
             <h3>Reviews:</h3>
             <ul>
                 <li ng-repeat="item in profile_info.reviews">{{item.name}} - {{item.rating}}/10</li>
