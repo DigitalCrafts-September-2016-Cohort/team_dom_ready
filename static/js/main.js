@@ -36,6 +36,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     $rootScope.factoryCookieData = null;
     $rootScope.authToken = null;
     $rootScope.user_info = null;
+    $state.go('home', {}, {reload: true});
   };
 
 
