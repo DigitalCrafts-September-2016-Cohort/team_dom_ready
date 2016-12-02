@@ -1,5 +1,4 @@
-<div class="container-fluid">
-
+<div class="container-fluid spacer">
     <div class="row avatar">
         <img src="/images/default-avatar.png" alt="">
     </div>
@@ -11,15 +10,15 @@
         <h4 class="text-center">{{profile_info.customer.email}}</h4>
     </div>
 
-    <hr>
-
     <div class="row">
+    <hr>
         <div class="col-sm-6 wishlist">
             <h3>Wishlist:</h3>
             <ul>
                 <li ng-repeat="item in profile_info.wishlist">{{item.name}}</li>
             </ul>
         </div>
+    <hr>
         <div class="col-sm-6 reviews">
             <h3>Reviews:</h3>
             <ul>
