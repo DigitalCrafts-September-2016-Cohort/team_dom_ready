@@ -76,6 +76,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
 
   // Creates markers for all locations that have been reviewed
   service.createMarkers = function(markers, type) {
+
     markers.forEach(function(location) {
       // console.log("Location info inside createMarkers: ", location);
       var name = location.name;
@@ -141,13 +142,14 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.location = function(place_id) {
+    console.log('user info', $rootScope.user_info);
     console.log('place id', place_id);
     var url = '/api/location/' + place_id;
     return $http({
       method: 'GET',
       url: url,
       params: {
-        user_id:  $rootScope.user_info.id
+        user_id: ($rootScope.user_info) ? $rootScope.user_info.id : null
     }
   });
   };
@@ -268,8 +270,10 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
       $scope.wishlist = markers_info.wishlist;
       $scope.reviews = markers_info.reviews;
       Dom_Ready_Factory.loadMap(null, 'far');
-      Dom_Ready_Factory.createMarkers($scope.wishlist, 'wishlist');
-      Dom_Ready_Factory.createMarkers($scope.reviews, 'review');
+      if ($scope.user_info) {
+        Dom_Ready_Factory.createMarkers($scope.wishlist, 'wishlist');
+        Dom_Ready_Factory.createMarkers($scope.reviews, 'review');
+      };
     });
 
   // Will do a request to the factory to get information to show in the api/search address
@@ -402,7 +406,7 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
 });
 
 
-app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $rootScope, $cookies) {
+app.controller("LoginController", function($scope, Dom_Ready_Factory, $timeout, $state, $rootScope, $cookies) {
   $scope.submitLogin = function(){
     var login_info = {
       'username': $scope.username,
@@ -421,6 +425,11 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $state, $r
       // console.log("hello there");
       // console.log($rootScope.user_info.first_name);
       $state.go('home');
+    }).error(function() {
+      $scope.loginError = true;
+      $timeout(function() {
+        $scope.loginError = false;
+      }, 2000);
     });
   };
 });
@@ -439,22 +448,26 @@ app.controller("ProfileController", function($scope, Dom_Ready_Factory, $rootSco
 
 app.controller("SignUpController", function($scope, Dom_Ready_Factory, $state){
   $scope.submitSignup = function() {
-    // store user signup info in a scope object
-    $scope.signup_data = {
-      username: $scope.username,
-      email: $scope.email,
-      first_name: $scope.first_name,
-      last_name: $scope.last_name,
-      password: $scope.password
-    };
-    // pass the user signup data object to be processed
-    Dom_Ready_Factory.signup($scope.signup_data)
-      .success(function(signup) {
-        // redirect to login page for new user to login after being added to db
-        // Will uncomment this later once we create the login Controller and login.html file
-        $state.go('login');
-        console.log('great success');
-      });
+    if ($scope.password !== $scope.confirm_password) {
+      return;
+    } else {
+      // store user signup info in a scope object
+      $scope.signup_data = {
+        username: $scope.username,
+        email: $scope.email,
+        first_name: $scope.first_name,
+        last_name: $scope.last_name,
+        password: $scope.password
+      };
+      // pass the user signup data object to be processed
+      Dom_Ready_Factory.signup($scope.signup_data)
+        .success(function(signup) {
+          // redirect to login page for new user to login after being added to db
+          // Will uncomment this later once we create the login Controller and login.html file
+          $state.go('login');
+          console.log('great success');
+        });
+    }
   };
 });
 

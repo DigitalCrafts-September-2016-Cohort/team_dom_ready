@@ -175,6 +175,7 @@ def api_search():
     print "\n\nMy arguments %s\n\n" % request.args
     profile_token = request.args.get('profile_token')
     print 'this is the token::', profile_token
+
     customer_id = db.query('''
         SELECT
             customer_id
@@ -182,62 +183,66 @@ def api_search():
             auth_token
         where
             token = $1
-    ''', profile_token).namedresult()[0]
+    ''', profile_token).namedresult()
+
     print 'this is the customer id ::', customer_id
+
     reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 
-    print 'hello, from inside the api search route!!'
+    if customer_id == []:
+        print 'i am nothing!'
 
-    # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
-    if show_or_search == "Show":
-        # print "This is the show or search info: %s" % show_or_search
+        pass
+    else:
 
-        reviewed_markers = db.query(
-        """
-            SELECT
-        		name,
-            	latitude,
-            	longitude,
-            	google_places_id
-            FROM
-            	location,
-            	review
-            WHERE
-            	review.location_id = location.id AND
-            	review.customer_id = $1;
-        """, customer_id).dictresult()
+        # grab the value of customer id 
+        customer_id = customer_id[0]
 
-        wishlist_markers = db.query(
-        """
-            SELECT
-                name,
-            	customer_id,
-            	location_id,
-                latitude,
-                longitude,
-            	google_places_id
-            FROM
-            	wishlist_loc,
-            	location
-            WHERE
-            	wishlist_loc.location_id = location.id AND
-            	wishlist_loc.customer_id = $1;
-        """, customer_id).dictresult()
+        # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
+        if show_or_search == "Show":
+            # print "This is the show or search info: %s" % show_or_search
 
-        # markers = {}
-        #
-        # markers["reviews"] = reviewed_markers
-        # markers["wishlist"] = wishlist_markers
+            reviewed_markers = db.query(
+            """
+                SELECT
+            		name,
+                	latitude,
+                	longitude,
+                	google_places_id
+                FROM
+                	location,
+                	review
+                WHERE
+                	review.location_id = location.id AND
+                	review.customer_id = $1;
+            """, customer_id).dictresult()
 
-        markers = {
-            'reviews': reviewed_markers,
-            'wishlist': wishlist_markers
-        }
-        print 'Markers: %r', markers
-        return jsonify(markers)
+            wishlist_markers = db.query(
+            """
+                SELECT
+                    name,
+                	customer_id,
+                	location_id,
+                    latitude,
+                    longitude,
+                	google_places_id
+                FROM
+                	wishlist_loc,
+                	location
+                WHERE
+                	wishlist_loc.location_id = location.id AND
+                	wishlist_loc.customer_id = $1;
+            """, customer_id).dictresult()
 
-    elif show_or_search == "Search":
+            markers = {
+                'reviews': reviewed_markers,
+                'wishlist': wishlist_markers
+            }
+            print 'Markers: %r', markers
+            return jsonify(markers)
+
+    if show_or_search == "Search":
         search = request.args.get('user_query')
         search = str(search)
         print "\n\nSearch information is: %s\n\n" % search
@@ -247,6 +252,7 @@ def api_search():
         print "\n\nGeocode info for search searched %s\n\n" % search_result
         return jsonify(search_result)
 
+    return 'Hello'
 
 @app.route('/api/location/<place_id>')
 def location(place_id):
@@ -257,97 +263,107 @@ def location(place_id):
     # user_id = int(user_id)
 
     print user_id
-    # make a query to see if user has already wishlisted the location or not
-
-    query = db.query(
-        '''
-        SELECT
-    	    location_id
-        FROM
-        	customer
-        INNER JOIN
-            wishlist_loc
-            ON wishlist_loc.customer_id = customer.id
-        INNER JOIN
-        	location
-            ON wishlist_loc.location_id=location.id
-        WHERE
-        	customer.id = $1 AND
-            location.google_places_id = $2;
-        ''', user_id, place_id).dictresult()
-
-    print "\n\n\nI'm the query information: %s\n\n\n" % query
-
-    if query == []:
-        is_wishlisted = False
-    else:
-        is_wishlisted = True
-
-    # use google_places_id to make a query to grab location id
-    location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
-
-    # check if location exists
-    if location_id == []:
-        review_info = None
-    else:
-
-        # first, grab the location_id and convert into integer
-        location_id = location_id[0]['id']
-        location_id = int(location_id)
-
-        # make a query to grab the review for that location
-        review_id = db.query(
-        '''
-        SELECT
-            review.id
-        FROM
-            customer
-        INNER JOIN
-            review
-            ON review.customer_id = customer.id
-        INNER JOIN
-            location
-            ON review.location_id=location.id
-        WHERE
-            customer.id = $1
-                AND
-                    location.id = $2
-        ''', user_id, location_id).dictresult()
-
-        # if review does exist
-        if review_id != []:
-
-            # grab the review id and convert into integer
-            review_id = review_id[0]['id']
-            review_id = int(review_id)
-
-            # make a query to grab the review info
-            review_info = db.query(
-            '''
-            SELECT
-                review.title,
-                review.review,
-                review.rating
-            FROM
-                review
-            WHERE
-                review.id = $1
-            ''', review_id).dictresult()[0]
-        else:
-            review_info = None
-
-    print 'review info is .... %s' % review_info
 
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)
 
-    return jsonify([
-        {
-        'geocode_result': geocode_result,
-        'is_wishlisted': is_wishlisted,
-        'review_info': review_info
-        }
-    ])
+    if user_id != None:
+
+        # make a query to see if user has already wishlisted the location or not
+        query = db.query(
+            '''
+            SELECT
+        	    location_id
+            FROM
+            	customer
+            INNER JOIN
+                wishlist_loc
+                ON wishlist_loc.customer_id = customer.id
+            INNER JOIN
+            	location
+                ON wishlist_loc.location_id=location.id
+            WHERE
+            	customer.id = $1 AND
+                location.google_places_id = $2;
+            ''', user_id, place_id).dictresult()
+
+        print "\n\n\nI'm the query information: %s\n\n\n" % query
+
+        if query == []:
+            is_wishlisted = False
+        else:
+            is_wishlisted = True
+
+        # use google_places_id to make a query to grab location id
+        location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
+
+        # check if location exists
+        if location_id == []:
+            review_info = None
+        else:
+
+            # first, grab the location_id and convert into integer
+            location_id = location_id[0]['id']
+            location_id = int(location_id)
+
+            # make a query to grab the review for that location
+            review_id = db.query(
+            '''
+            SELECT
+                review.id
+            FROM
+                customer
+            INNER JOIN
+                review
+                ON review.customer_id = customer.id
+            INNER JOIN
+                location
+                ON review.location_id=location.id
+            WHERE
+                customer.id = $1
+                    AND
+                        location.id = $2
+            ''', user_id, location_id).dictresult()
+
+            # if review does exist
+            if review_id != []:
+
+                # grab the review id and convert into integer
+                review_id = review_id[0]['id']
+                review_id = int(review_id)
+
+                # make a query to grab the review info
+                review_info = db.query(
+                '''
+                SELECT
+                    review.title,
+                    review.review,
+                    review.rating
+                FROM
+                    review
+                WHERE
+                    review.id = $1
+                ''', review_id).dictresult()[0]
+            else:
+                review_info = None
+
+        print 'review info is .... %s' % review_info
+
+        return jsonify([
+            {
+            'geocode_result': geocode_result,
+            'is_wishlisted': is_wishlisted,
+            'review_info': review_info
+            }
+        ])
+    else:
+        return jsonify([
+            {
+            'geocode_result': geocode_result,
+            'is_wishlisted': None,
+            'review_info': None
+            }
+        ])
 
 @app.route('/api/location/edit/review', methods=['POST'])
 def location_edit():
