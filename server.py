@@ -148,32 +148,15 @@ def profile_page():
         wishlist = db.query(
         """
             SELECT
-                customer.id,
-                location.id,
-                location.name,
-                location.google_places_id,
-                wishlist_loc.location_id,
-                category.category
+            	*
             from
-                customer
-            inner join
-                wishlist_loc
-            on
-                customer.id = wishlist_loc.customer_id
-            inner join
-                location
-            on
-                location.id = wishlist_loc.location_id
-            inner join
-                loc_category
-            on
-                loc_category.location_id = location.id
-            inner join
-                category
-            on
-                category.id = loc_category.category_id
-            and
-               customer.id = $1;
+            	customer,
+            	wishlist_loc,
+            	location
+            where
+            	customer.id = wishlist_loc.customer_id and
+            	wishlist_loc.location_id = location.id and
+            	customer.id =  $1;
         """, customer_id).dictresult()
 
         profile_information["customer"] = customer_profile
@@ -189,7 +172,18 @@ def profile_page():
 @app.route("/api/search")
 def api_search():
     # Hard coded the customer_id for now.  We'll get the current user's customer_id from the database later using a token that is created at the time of login
-    customer_id = 2;
+    print "\n\nMy arguments %s\n\n" % request.args
+    profile_token = request.args.get('profile_token')
+    print 'this is the token::', profile_token
+    customer_id = db.query('''
+        SELECT
+            customer_id
+        from
+            auth_token
+        where
+            token = $1
+    ''', profile_token).namedresult()[0]
+    print 'this is the customer id ::', customer_id
     reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 

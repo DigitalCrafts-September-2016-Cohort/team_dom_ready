@@ -23,6 +23,11 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     $rootScope.user_info = $rootScope.factoryCookieData.user;
   }
 
+  // state.go takes up to three arguments: destination, params, and options
+  $rootScope.homepage = function(){
+    $state.go('home', {}, {reload: true});
+  };
+
   $rootScope.logout = function() {
     console.log("Entered the logout function");
     // remove method => pass in the value of the cookie data you want to remove
@@ -32,6 +37,8 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
     $rootScope.authToken = null;
     $rootScope.user_info = null;
   };
+
+
 
   // SERVICE FUNCTIONS
 
@@ -177,7 +184,8 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
       method: 'GET',
       url: url,
       params: {
-        show_or_search: show_or_search
+        show_or_search: show_or_search,
+        profile_token: $rootScope.authToken
       }
     });
   };
@@ -191,7 +199,8 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
       url: url,
       params: {
         user_query: userQuery,
-        show_or_search: show_or_search
+        show_or_search: show_or_search,
+        profile_token: $rootScope.authToken
       }
     });
   };
@@ -256,13 +265,11 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
 
   Dom_Ready_Factory.requestMarkersInfo()
     .success(function(markers_info) {
-      console.log(markers_info);
       $scope.wishlist = markers_info.wishlist;
       $scope.reviews = markers_info.reviews;
       Dom_Ready_Factory.loadMap(null, 'far');
       Dom_Ready_Factory.createMarkers($scope.wishlist, 'wishlist');
       Dom_Ready_Factory.createMarkers($scope.reviews, 'review');
-      console.log('you are doing all right!!! says request Markers info');
     });
 
   // Will do a request to the factory to get information to show in the api/search address
@@ -294,6 +301,7 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
     };
     $scope.name = data.name;
     // make a service call to create a marker and pass in the json data
+    Dom_Ready_Factory.loadMap($scope.latLong, 'close');
     Dom_Ready_Factory.createMarker($scope.latLong, $scope.place_id, $scope.name);
   };
 
@@ -429,8 +437,7 @@ app.controller("ProfileController", function($scope, Dom_Ready_Factory, $rootSco
     });
 });
 
-
-app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
+app.controller("SignUpController", function($scope, Dom_Ready_Factory, $state){
   $scope.submitSignup = function() {
     // store user signup info in a scope object
     $scope.signup_data = {
@@ -446,6 +453,7 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory) {
         // redirect to login page for new user to login after being added to db
         // Will uncomment this later once we create the login Controller and login.html file
         $state.go('login');
+        console.log('great success');
       });
   };
 });
