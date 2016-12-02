@@ -134,6 +134,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.location = function(place_id) {
+    console.log('place id', place_id);
     var url = '/api/location/' + place_id;
     return $http({
       method: 'GET',
@@ -182,6 +183,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.search = function(userQuery) {
+    console.log('Hello, I entered the search service and you are looking for: ', userQuery);
     show_or_search = "Search";
     var url = '/api/search';
     return $http({
@@ -210,6 +212,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.updateHeart = function(is_marked, location_info, user_info) {
+    console.log("Location info for my heart: ", location_info);
     var url = '/api/marked';
     return $http({
       method: 'POST',
@@ -242,12 +245,17 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
       Dom_Ready_Factory.loadMap(null, 'far');
       Dom_Ready_Factory.createMarkers($scope.wishlist, 'wishlist');
       Dom_Ready_Factory.createMarkers($scope.reviews, 'review');
+      console.log('you are doing all right!!! says request Markers info');
     });
 
   // Will do a request to the factory to get information to show in the api/search address
   $scope.submitSearch = function() {
     var query = $scope.search;
+    console.log('I am inside the submit search function!!! query Me!!!!', query);
     Dom_Ready_Factory.search(query)
+      .error(function(data) {
+        console.log('I am an error in the submit search function!!!');
+      })
       .success(function(data){
         // save data to a scope variable
         console.log('search data being returned:', data);
@@ -318,7 +326,7 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
   // pass in the desired location ID into the service function
   Dom_Ready_Factory.location($stateParams.place_id)
     .success(function(results){
-      console.log(results);
+      console.log("Here are the location obj results:", results);
       // find out if location was wishlisted and save it to a scope variable
       $scope.isWishListed = results[0].is_wishlisted;
 
@@ -326,7 +334,8 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       $scope.lat = $scope.results.geometry.location.lat;
       $scope.lng = $scope.results.geometry.location.lng;
       $scope.place_id = $scope.results.place_id;
-      $scope.name = $scope.results.geometry.name;
+      $scope.name = $scope.results.name;
+      console.log("My name is...", $scope.name);
 
       var latLng = {lat: $scope.lat, lng: $scope.lng};
       // render a small map and create a marker for the searched location
@@ -343,7 +352,7 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       for (var i = 0; i < $scope.photoResults.length; i++) {
         var imageSrc = 'https://maps.googleapis.com/maps/api/place/photo?';
         imageSrc += 'maxwidth=1000&';
-        imageSrc += 'key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&';
+        imageSrc += 'key=AIzaSyDZi7AdCdOcJlH3u14kSnJhL4KGGWt1wCk';
         imageSrc += 'photoreference=';
         imageSrc += $scope.photoResults[i].photo_reference;
         // store the imageSrc in the imageUrls array

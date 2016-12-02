@@ -2,8 +2,12 @@
 <h2>{{rating}}</h2>
 <h2>{{results.formatted_address}}</h2>
 <div id="map" style="height: 300px; width: 300px"></div>
-<i ng-show="!isWishListed" class="fa fa-heart-o" ng-model="isFavorited" ng-click="toggleHeart()" aria-hidden="true"></i>
-<i ng-show="isWishListed" ng-click="toggleHeart()" class="fa fa-heart" aria-hidden="true"></i>
+<span ng-show="!isWishListed" >
+  <i class="fa fa-heart-o heart" ng-click="toggleHeart()" aria-hidden="true"></i> Wishlist
+</span>
+<span ng-show="isWishListed" >
+  <i class="fa fa-heart heart" ng-click="toggleHeart()" aria-hidden="true"></i> Wishlisted
+</span>
 <p>Website: {{results.website}}</p>
 <p>Phone: {{results.formatted_phone_number}}</p>
 <p>{{locationDescription}}</p>

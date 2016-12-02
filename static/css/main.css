@@ -34,3 +34,12 @@ body {
 .image_div {
   background-color: #000;
 }
+
+/*
+ * Location
+ */
+
+/* Wishlist */
+i.heart {
+  color: red;
+}

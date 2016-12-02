@@ -193,6 +193,8 @@ def api_search():
     reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 
+    print 'hello, from inside the api search route!!'
+
     # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
     if show_or_search == "Show":
         # print "This is the show or search info: %s" % show_or_search
@@ -216,7 +218,6 @@ def api_search():
         """
             SELECT
                 name,
-        		comment,
             	customer_id,
             	location_id,
                 latitude,
@@ -239,15 +240,17 @@ def api_search():
             'reviews': reviewed_markers,
             'wishlist': wishlist_markers
         }
-        print markers
+        print 'Markers: %r', markers
         return jsonify(markers)
 
     elif show_or_search == "Search":
         search = request.args.get('user_query')
         search = str(search)
+        print "\n\nSearch information is: %s\n\n" % search
         # Getting details from search
         search_result = gmaps.places(search)
-        # print "\n\nGeocode info for search searched %s\n\n" % search_result
+        # search_result = gmaps.geocode(search)
+        print "\n\nGeocode info for search searched %s\n\n" % search_result
         return jsonify(search_result)
 
 
@@ -263,39 +266,39 @@ def location(place_id):
     # make a query to see if user has already wishlisted the location or not
 
     query = db.query(
-    '''
-    SELECT
-	    *
-    FROM
-    	customer
-    INNER JOIN
-        wishlist_loc
-        ON wishlist_loc.customer_id = customer.id
-    INNER JOIN
-    	location
-        ON wishlist_loc.location_id=location.id
-    WHERE
-    	customer.id = $1 AND
-        location.google_places_id = $2;
-    ''', user_id, place_id).dictresult()
+        '''
+        SELECT
+    	    location_id
+        FROM
+        	customer
+        INNER JOIN
+            wishlist_loc
+            ON wishlist_loc.customer_id = customer.id
+        INNER JOIN
+        	location
+            ON wishlist_loc.location_id=location.id
+        WHERE
+        	customer.id = $1 AND
+            location.google_places_id = $2;
+        ''', user_id, place_id).dictresult()
+
+    print "\n\n\nI'm the query information: %s\n\n\n" % query
 
     if query == []:
         is_wishlisted = False
     else:
         is_wishlisted = True
 
-
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)
+
+
     return jsonify([
         {
         'geocode_result': geocode_result,
         'is_wishlisted': is_wishlisted
         }
     ])
-
-
-    # geocode_result, {'is_wishlisted': is_wishlisted})
 
 @app.route('/api/location/edit', methods=['POST'])
 def location_edit():
@@ -394,21 +397,21 @@ def marked():
     # make a query to see if user has already wishlisted the location or not
 
     query = db.query(
-    '''
-    SELECT
-	    *
-    FROM
-    	customer
-    INNER JOIN
-        wishlist_loc
-        ON wishlist_loc.customer_id = customer.id
-    INNER JOIN
-    	location
-        ON wishlist_loc.location_id=location.id
-    WHERE
-    	customer.id = $1 AND
-        location.google_places_id = $2;
-    ''', user_id, place_id).dictresult()
+        '''
+        SELECT
+    	    *
+        FROM
+        	customer
+        INNER JOIN
+            wishlist_loc
+            ON wishlist_loc.customer_id = customer.id
+        INNER JOIN
+        	location
+            ON wishlist_loc.location_id=location.id
+        WHERE
+        	customer.id = $1 AND
+            location.google_places_id = $2;
+        ''', user_id, place_id).dictresult()
 
     # make a query to grab the location id
     location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
@@ -451,13 +454,11 @@ def marked():
         if marked:
         # create a new entry in the db
             db.insert(
-
-                    'wishlist_loc',
-                    {
-                        'customer_id': user_id,
-                        'location_id': location_id
-                    }
-
+                'wishlist_loc',
+                {
+                    'customer_id': user_id,
+                    'location_id': location_id
+                }
             )
 
     return 'Be HAPPY!!'
