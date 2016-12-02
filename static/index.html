@@ -9,58 +9,61 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- FontAwesome CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin:300,300i,400" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body ng-app="dom_ready">
-
-  <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-            Menu <i class="fa fa-bars"></i>
-        </button>
-        <a class="navbar-brand" ng-click="homepage()">Team DOM Ready</a>
-      </div>
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" ng-click="homepage()">Team DOM Ready</a>
+                </div>
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a ng-if="user_info">Welcome {{user_info.first_name}}!</a></li>
-          <li><a ng-if="!user_info" ui-sref="signup">Sign Up</a></li>
-          <li><a ng-if="!user_info" ui-sref="login">Login</a></li>
-          <li><a ng-if="user_info" ui-sref="profile" >Profile</a></li>
-          <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
-        </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-  </nav>
-
-  <div class="container">
-    <main ui-view></main>
-  </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a ng-if="user_info">Welcome {{user_info.first_name}}!</a></li>
+                        <li><a ng-if="!user_info" ui-sref="signup">Sign Up</a></li>
+                        <li><a ng-if="!user_info" ui-sref="login">Login</a></li>
+                        <li><a ng-if="user_info" ui-sref="profile">Profile</a></li>
+                        <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </nav>
+        </div>
+    </div>
 
 
 
-  <!-- Angular JS -->
-  <script src="js/angular.js"></script>
-  <script src="js/angular-ui-router.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
+    <ui-view></ui-view>
 
-  <!-- jQuery JS -->
-  <script src="js/jquery-3.1.1.min.js"></script>
 
-  <!-- Bootstrap JS -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-  <!-- Google Maps API -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&libraries=places"></script>
+    <!-- Angular JS -->
+    <script src="js/angular.js"></script>
+    <script src="js/angular-ui-router.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
 
-  <!-- Custom JS -->
-  <script src="js/main.js"></script>
+    <!-- jQuery JS -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Google Maps API -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&libraries=places"></script>
+
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
 </body>
 
 </html>

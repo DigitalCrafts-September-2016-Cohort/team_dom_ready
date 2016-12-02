@@ -1,22 +1,30 @@
-<div class="text-center image_div">
-    <img class="profile_image" src="/images/default-avatar.png" alt="">
-</div>
-<h1 class="text-center">{{profile_info.customer.username}}</h1>
-<h2 class="text-center">{{profile_info.customer.first_name}} {{profile_info.customer.last_name}}</h2>
-<p class="text-center">{{profile_info.customer.email}}</p>
+<div class="container-fluid">
 
-<hr>
-<div class="row">
-    <div class="col-sm-5 col-sm-offset-1">
-        <h3>Wishlist</h3>
-        <ul>
-            <li ng-repeat="item in profile_info.wishlist">{{item.name}}</li>
-        </ul>
+    <div class="row avatar">
+        <img src="/images/default-avatar.png" alt="">
     </div>
-    <div class="col-sm-5 col-sm-offset-1">
-        <h3>Reviews</h3>
-        <ul>
-            <li ng-repeat="item in profile_info.reviews">{{item.name}} - {{item.rating}}/10</li>
-        </ul>
+
+    <!-- User info -->
+    <div class="row">
+        <h1 class="text-center">{{profile_info.customer.username}}</h2>
+        <h2 class="text-center">{{profile_info.customer.first_name}} {{profile_info.customer.last_name}}</h2>
+        <h4 class="text-center">{{profile_info.customer.email}}</h4>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-6 wishlist">
+            <h3>Wishlist:</h3>
+            <ul>
+                <li ng-repeat="item in profile_info.wishlist">{{item.name}}</li>
+            </ul>
+        </div>
+        <div class="col-sm-6 reviews">
+            <h3>Reviews:</h3>
+            <ul>
+                <li ng-repeat="item in profile_info.reviews">{{item.name}} - {{item.rating}}/10</li>
+            </ul>
+        </div>
     </div>
 </div>
