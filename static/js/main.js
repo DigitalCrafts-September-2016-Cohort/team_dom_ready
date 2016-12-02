@@ -359,7 +359,7 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
 
       $scope.reviewTitle = ($scope.review_info) ? $scope.review_info.title : "";
       $scope.reviewRating = ($scope.review_info) ? $scope.review_info.rating : 0;
-      $scope.reviewBody = ($scope.review_info) ? $scope.review_info.review : 'Write a review!';
+      $scope.reviewBody = ($scope.review_info) ? $scope.review_info.review : '';
 
       console.log('review rating', typeof $scope.reviewRating);
       $scope.results = results[0].geocode_result.result;

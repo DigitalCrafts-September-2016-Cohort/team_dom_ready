@@ -32,7 +32,7 @@
         <p class="col-sm-6">Website: {{results.website}}</p>
     </div>
 
-    <div ng-show="!isReviewed" class="row reviews section">
+    <div class="row reviews section">
         <h4 class="header-styling">Review:</h4>
         <!-- Save -->
         <div ng-show="!isReviewed">
@@ -42,15 +42,20 @@
             <option>3</option>
             <option>4</option>
             <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
           </select>
-          <input type="text" ng-model="reviewTitle" value="{{reviewTitle}}">
-          <textarea name="name" rows="8" cols="40" ng-model="reviewBody">{{reviewBody}}</textarea>
+          <input type="text" ng-model="reviewTitle" placeholder="Review Title" value="{{reviewTitle}}">
+          <textarea name="name" rows="8" cols="40" ng-model="reviewBody" placeholder="Write a review...">{{reviewBody}}</textarea>
           <input type="button" ng-click="updateReview()" value="Submit">
         </div>
         <!-- Edit -->
         <div ng-show="isReviewed" class="">
           <h5>{{reviewTitle}}</h5>
-          <p>rating: {{reviewRating}} / 5</p>
+          <p>rating: {{reviewRating}} / 10</p>
           <p>{{reviewBody}}</p>
           <input type="button" ng-click="updateReview()" value="Edit">
         </div>
