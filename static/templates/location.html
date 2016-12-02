@@ -1,19 +1,48 @@
-<h1>{{results.name}}</h1>
-<h2>{{rating}}</h2>
-<h2>{{results.formatted_address}}</h2>
-<div id="map" style="height: 300px; width: 300px"></div>
-<span ng-show="!isWishListed" >
-  <i class="fa fa-heart-o heart" ng-click="toggleHeart()" aria-hidden="true"></i> Wishlist
-</span>
-<span ng-show="isWishListed" >
-  <i class="fa fa-heart heart" ng-click="toggleHeart()" aria-hidden="true"></i> Wishlisted
-</span>
-<p>Website: {{results.website}}</p>
-<p>Phone: {{results.formatted_phone_number}}</p>
-<p>{{locationDescription}}</p>
-<h2>{{reviewTitle}}</h2>
-<p>{{reviewBody}}</p>
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-xs-12">{{results.name}}</h1>
+    </div>
 
-<div ng-repeat="image in imageUrls">
-  <img ng-src="{{image}}" alt="hello">
+    <div class="row">
+        <h5 class="col-xs-12">{{results.formatted_address}}</h5>
+        <h3 class="col-xs-12">{{rating}}</h3>
+    </div>
+
+    <div class="row">
+        <div id="map" class="map"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 wishlist-option">
+            <div ng-show="!isWishListed" >
+                <i class="fa fa-heart-o fa-3x heart" ng-click="toggleHeart()" aria-hidden="true"></i>
+                <h4 class="wishlist-text">Wishlist</h4>
+            </div>
+            <div ng-show="isWishListed" >
+                <i class="fa fa-heart fa-3x heart" ng-click="toggleHeart()" aria-hidden="true"></i>
+                <h4 class="wishlist-text">Wishlisted!</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row information section">
+        <h4 class="header-styling">Information:</h4>
+        <p class="col-sm-6">Phone: {{results.formatted_phone_number}}</p>
+        <p class="col-sm-6">Website: {{results.website}}</p>
+    </div>
+
+    <div class="row reviews section">
+        <h4 class="header-styling">Review:</h4>
+        <!-- <p>{{locationDescription}}</p> -->
+        <h5>{{reviewTitle}}</h5>
+        <p>{{reviewBody}}</p>
+    </div>
+
+    <div class="row photos section">
+        <h4 class="header-styling">Photos:</h4>
+        <div ng-repeat="image in imageUrls">
+            <img ng-src="{{image}}" alt="hello">
+        </div>
+    </div>
+
 </div>

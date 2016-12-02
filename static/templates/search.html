@@ -1,44 +1,52 @@
+<!-- Search form -->
+<div class="container-fluid">
     <div class="row">
         <form class="navbar-form navbar-left" ng-submit="submitSearch()">
-            <div class="form-group">
-                <input type="text" ng-model="search" class="form-control search" placeholder="Search">
+            <div class="search-form form-group clearfix">
+                <input class="search-bar fl" type="text" ng-model="search" class="form-control search" placeholder="Search for a place...">
+                <button type="submit" class="btn btn-default search-btn fr">Submit</button>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
         </form>
-    </div>
-    <div ng-if="data.length === 0" style="display: inline-block;">
-        <p>No results found!</p>
-    </div>
-    <div ng-if="data.length > 1">
-        <h3>Multiple results found:</h3>
-        <ul>
-            <li ng-repeat="place in data">
-                <a ng-click="getSinglePlace(place)">{{place.name}}</a>
-                <p>{{place.formatted_address}}</p>
-            </li>
-        </ul>
+        <div ng-if="data.length === 0" style="display: inline-block;">
+            <p>No results found!</p>
+        </div>
+        <div ng-if="data.length > 1">
+            <h4>Multiple results found:</h4>
+            <ul>
+                <li ng-repeat="place in data">
+                    <a ng-click="getSinglePlace(place)">{{place.name}}</a>
+                    <p>{{place.formatted_address}}</p>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <div id="map" style="width:900px; height:580px;"></div>
-
+    <!-- Map -->
     <div class="row">
-        <h2>Wishlist</h2>
+        <div id="map" class="map"></div>
+    </div>
+
+    <!-- Wishlist/reviews lists -->
+    <div class="row">
+        <hr>
         <div class="wishlist col-sm-6">
+            <h3>Wishlist</h3>
             <ul>
-                <li ng-repeat="place in wishlist">
-                    <p>{{place.name}}</p>
-                    <a href="/#/location/{{place.google_places_id}}">See info</a>
+                <li class="clearfix" ng-repeat="place in wishlist">
+                    <p class="fl">{{place.name}}</p>
+                    <a class="fr" href="/#/location/{{place.google_places_id}}">See info</a>
                 </li>
             </ul>
         </div>
-
-        <h2>Reviews</h2>
         <div class="reviews col-sm-6">
+            <h3>Reviews</h3>
             <ul>
-                <li ng-repeat="place in reviews">
-                    <p>{{place.name}}</p>
-                    <a href="/#/location/{{place.google_places_id}}">See info</a>
+                <li class="clearfix" ng-repeat="place in reviews">
+                    <p class="fl">{{place.name}}</p>
+                    <a class="fr" href="/#/location/{{place.google_places_id}}">See info</a>
                 </li>
             </ul>
         </div>
     </div>
+
+</div>
