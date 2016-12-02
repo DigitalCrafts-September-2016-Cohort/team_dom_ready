@@ -42,6 +42,7 @@ ul {
 
 .navbar {
   margin-bottom: 0;
+  position: relative;
   border: 0;
 }
 
@@ -59,6 +60,27 @@ ul {
 .navbar-header {
   background: #C8E79D;
 }
+
+.navbar-brand svg {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 40px;
+}
+
+.navbar-brand span {
+  margin-left: 30px;
+  color: #333;
+}
+
+.navbar-form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+
+/* --- SEARCH PAGE --- */
 
 .search-form {
   display: flex;
@@ -85,16 +107,6 @@ ul {
 .search-btn:hover,
 .search-btn:active {
   background: #FDD697 !important;
-}
-
-
-
-/* --- SEARCH PAGE --- */
-
-.navbar-form {
-  margin: 0;
-  padding: 0;
-  border: 0;
 }
 
 .map {
