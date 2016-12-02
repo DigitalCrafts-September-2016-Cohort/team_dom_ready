@@ -14,7 +14,7 @@ body {
   color: #333;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: 300;
 }
 
@@ -23,8 +23,32 @@ ul {
   list-style: none;
 }
 
+label {
+  display: block;
+  text-align: left;
+}
+
+textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
 .fl { float: left; }
 .fr { float: right; }
+
+.org,
+.org:visited,
+.org:focus,
+.org:hover,
+.org:active {
+    background: #FDD697;
+  }
 
 .btn {
   border: 0;
@@ -35,6 +59,11 @@ ul {
   margin: 2rem 0;
   font-style: italic;
   text-align: center;
+}
+
+.spacer {
+  content: "";
+  margin-bottom: 30px;
 }
 
 
@@ -99,14 +128,6 @@ ul {
   width: 25%;
   float: left;
   padding: 1rem;
-  background: #FDD697;
-}
-
-.search-btn:visited,
-.search-btn:focus,
-.search-btn:hover,
-.search-btn:active {
-  background: #FDD697 !important;
 }
 
 .map {
@@ -114,7 +135,8 @@ ul {
 }
 
 .wishlist,
-.reviews {
+.reviews,
+.review {
   text-align: center;
 }
 
