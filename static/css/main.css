@@ -4,12 +4,147 @@
 
  /* Base font size to use throughout the whole site. */
 html {
-  font-size: 10px;
+  font-size: 75%;
 }
 
 body {
-  font-size: 1.6rem;
+  font-size: 1rem;
+  font-family: 'Libre Franklin', sans-serif;
+  /*font-family: monospace;, sans-serif;*/
+  color: #333;
 }
+
+h1, h2, h3, h4 {
+  font-weight: 300;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+.fl { float: left; }
+.fr { float: right; }
+
+.btn {
+  border: 0;
+  border-radius: 0;
+}
+
+.header-styling {
+  margin: 2rem 0;
+  font-style: italic;
+  text-align: center;
+}
+
+
+/* --- NAVBAR --- */
+
+.navbar {
+  margin-bottom: 0;
+  position: relative;
+  border: 0;
+}
+
+.navbar-nav {
+  margin-top: 0;
+  margin-bottom: 0;
+  background: #f1f5ed;
+}
+
+.navbar-default .navbar-brand { color: #333; }
+.navbar-default .navbar-toggle { border: 0; }
+.navbar-default .navbar-toggle:active { background: #C8E79D }
+.navbar-default .navbar-toggle:focus { background: #C8E79D }
+
+.navbar-header {
+  background: #C8E79D;
+}
+
+.navbar-brand svg {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 40px;
+}
+
+.navbar-brand span {
+  margin-left: 30px;
+  color: #333;
+}
+
+.navbar-form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+
+/* --- SEARCH PAGE --- */
+
+.search-form {
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar {
+  width: 75%;
+  float: left;
+  font-size: 1rem;
+  padding: 0.6rem;
+  border: 0;
+}
+
+.search-btn {
+  width: 25%;
+  float: left;
+  padding: 1rem;
+  background: #FDD697;
+}
+
+.search-btn:visited,
+.search-btn:focus,
+.search-btn:hover,
+.search-btn:active {
+  background: #FDD697 !important;
+}
+
+.map {
+  min-height: 15rem;
+}
+
+.wishlist,
+.reviews {
+  text-align: center;
+}
+
+
+/* --- LOCATION PAGE --- */
+
+/* Wishlist */
+.wishlist-option {
+  margin: 3rem 0 1rem;
+  text-align: center;
+}
+
+.wishlist-text {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: top;
+}
+
+i.heart {
+  color: #FE7569;
+}
+
+/* Photos */
+.photos,
+.information {
+  text-align: center;
+}
+
+
+
 
 /*
  * Font Awesome styles
@@ -20,26 +155,18 @@ body {
   color: red;
 }
 
-/*
- * Profile page
- */
+
+/* --- PROFILE PAGE --- */
 
 /* Image styles */
- .profile_image {
-    width: 300px;
-    border: 15px solid #FFF;
-    /*border-radius: 100%;*/
+ .avatar img {
+    width: 100%;
+    max-width: 12rem;
+    border-radius: 50%;
+    margin: 2rem auto 0;
+    display: block;
  }
 
 .image_div {
   background-color: #000;
-}
-
-/*
- * Location
- */
-
-/* Wishlist */
-i.heart {
-  color: red;
 }

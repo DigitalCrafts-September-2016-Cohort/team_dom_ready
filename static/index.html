@@ -9,58 +9,64 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- FontAwesome CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin:300,300i,400" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body ng-app="dom_ready">
-
-  <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-            Menu <i class="fa fa-bars"></i>
-        </button>
-        <a class="navbar-brand" ng-click="homepage()">Team DOM Ready</a>
-      </div>
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" ng-click="homepage()">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 144.083 180" enable-background="new 0 0 144.083 144" xml:space="preserve"><path d="M113.73,122.322L97.728,99.713c-0.563-0.795-1.476-1.267-2.449-1.267H83.741l9.099-30.819v-0.434  c0-7.744-4.263-14.5-10.558-18.08c4.522-3.215,7.487-8.484,7.487-14.443c0-9.774-7.952-17.727-17.727-17.727  c-9.774,0-17.727,7.952-17.727,17.727c0,5.958,2.965,11.228,7.487,14.443c-6.294,3.58-10.557,10.336-10.557,18.08v0.442  l9.278,30.811H48.804c-0.974,0-1.887,0.472-2.449,1.267l-16.002,22.609c-0.647,0.916-0.73,2.116-0.215,3.112  c0.515,0.996,1.543,1.621,2.664,1.621h78.479c1.121,0,2.149-0.625,2.664-1.621C114.46,124.438,114.377,123.238,113.73,122.322z   M60.315,34.671c0-6.466,5.261-11.727,11.727-11.727c6.466,0,11.727,5.261,11.727,11.727c0,6.465-5.261,11.726-11.727,11.726  C65.576,46.396,60.315,41.136,60.315,34.671z M72.042,52.396c8.021,0,14.572,6.414,14.792,14.383l-12.785,43.306h-3.755  L57.251,66.771C57.476,58.807,64.024,52.396,72.042,52.396z M38.601,121.056l11.755-16.609H62.33l3.504,11.639h12.699l3.437-11.639  h11.758l11.755,16.609H38.601z"/><text x="0" y="159" fill="#333" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"></svg>
+                        <span class="logo-words">mYelp</span>
+                    </a>
+                </div>
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a ng-if="user_info">Welcome {{user_info.first_name}}!</a></li>
-          <li><a ng-if="!user_info" ui-sref="signup">Sign Up</a></li>
-          <li><a ng-if="!user_info" ui-sref="login">Login</a></li>
-          <li><a ng-if="user_info" ui-sref="profile" >Profile</a></li>
-          <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
-        </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-  </nav>
-
-  <div class="container">
-    <main ui-view></main>
-  </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a ng-if="user_info">Welcome {{user_info.first_name}}!</a></li>
+                        <li><a ng-if="!user_info" ui-sref="signup">Sign up</a></li>
+                        <li><a ng-if="!user_info" ui-sref="login">Log in</a></li>
+                        <li><a ng-if="user_info" ui-sref="profile">Profile</a></li>
+                        <li><a ng-if="user_info" ng-click="logout()">Logout</a></li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </nav>
+        </div>
+    </div>
 
 
 
-  <!-- Angular JS -->
-  <script src="js/angular.js"></script>
-  <script src="js/angular-ui-router.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
+    <ui-view></ui-view>
 
-  <!-- jQuery JS -->
-  <script src="js/jquery-3.1.1.min.js"></script>
 
-  <!-- Bootstrap JS -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-  <!-- Google Maps API -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&libraries=places"></script>
+    <!-- Angular JS -->
+    <script src="js/angular.js"></script>
+    <script src="js/angular-ui-router.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
 
-  <!-- Custom JS -->
-  <script src="js/main.js"></script>
+    <!-- jQuery JS -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Google Maps API -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdBEpbwOpx3As-LpcByo9s4JAuwjROR3A&libraries=places"></script>
+
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
 </body>
 
 </html>
