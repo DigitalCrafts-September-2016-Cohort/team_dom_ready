@@ -29,7 +29,7 @@
     <!-- Wishlist/reviews lists -->
     <div class="row">
         <hr ng-if="wishlist === []">
-        <div class="wishlist col-sm-6" ng-if="wishlist === []">
+        <div class="wishlist col-sm-6" ng-if="wishlist !== []">
             <h3>Wishlist</h3>
             <ul>
                 <li class="clearfix" ng-repeat="place in wishlist">
@@ -39,7 +39,7 @@
             </ul>
         </div>
         <hr ng-if="reviews === []">
-        <div class="reviews col-sm-6" ng-if="reviews === []">
+        <div class="reviews col-sm-6" ng-if="reviews !== []">
             <h3>Reviews</h3>
             <ul>
                 <li class="clearfix" ng-repeat="place in reviews">
