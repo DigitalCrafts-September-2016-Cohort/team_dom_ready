@@ -1,8 +1,7 @@
-/*
- * Base structure
- */
+/*=====================
+GLOBAL LAYOUT/STYLES
+=====================*/
 
- /* Base font size to use throughout the whole site. */
 html {
   font-size: 75%;
 }
@@ -10,7 +9,6 @@ html {
 body {
   font-size: 1rem;
   font-family: 'Libre Franklin', sans-serif;
-  /*font-family: monospace;, sans-serif;*/
   color: #333;
 }
 
@@ -39,6 +37,10 @@ textarea {
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
+.container {
+  max-width: 960px !important;
+}
+
 .fl { float: left; }
 .fr { float: right; }
 
@@ -55,6 +57,11 @@ textarea {
   border-radius: 0;
 }
 
+.user-form {
+  max-width: 550px !important;
+  margin: 0 auto;
+}
+
 .header-styling {
   margin: 2rem 0;
   font-style: italic;
@@ -67,12 +74,29 @@ textarea {
 }
 
 
+/*=====================
+SPECIFIC LAYOUT/STYLES
+=====================*/
+
 /* --- NAVBAR --- */
 
+.navbar a.clickable {
+  cursor: pointer;
+}
+
+.navbar-container {
+  margin: 0 auto;
+  position: relative;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
 .navbar {
+  background: #C8E79D;
   margin-bottom: 0;
   position: relative;
   border: 0;
+  border-radius: 0;
 }
 
 .navbar-nav {
@@ -83,8 +107,9 @@ textarea {
 
 .navbar-default .navbar-brand { color: #333; }
 .navbar-default .navbar-toggle { border: 0; }
-.navbar-default .navbar-toggle:active { background: #C8E79D }
 .navbar-default .navbar-toggle:focus { background: #C8E79D }
+.navbar-default .navbar-toggle:hover { background: #C8E79D }
+.navbar-default .navbar-toggle:active { background: #C8E79D }
 
 .navbar-header {
   background: #C8E79D;
@@ -95,10 +120,13 @@ textarea {
   top: 5px;
   left: 5px;
   width: 40px;
+  fill: #333;
 }
 
-.navbar-brand span {
-  margin-left: 30px;
+.logo-words {
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 400;
+  margin-left: 25px;
   color: #333;
 }
 
@@ -108,19 +136,20 @@ textarea {
   border: 0;
 }
 
-
 /* --- SEARCH PAGE --- */
 
 .search-form {
+  margin: 0;
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .search-bar {
   width: 75%;
   float: left;
-  font-size: 1rem;
-  padding: 0.6rem;
+  font-size: 1.3rem;
+  padding: 0.6rem 1.2rem;
   border: 0;
 }
 
@@ -131,7 +160,7 @@ textarea {
 }
 
 .map {
-  min-height: 15rem;
+  min-height: 70vh;
 }
 
 .wishlist,
@@ -165,13 +194,6 @@ i.heart {
   text-align: center;
 }
 
-
-
-
-/*
- * Font Awesome styles
- */
-
 /* Styles used in the signup.html file */
 .fa-exclamation-circle {
   color: red;
@@ -191,4 +213,41 @@ i.heart {
 
 .image_div {
   background-color: #000;
+}
+
+
+/*=====================
+MEDIA QUERIES
+=====================*/
+
+@media screen and (min-width: 480px) {
+
+  .navbar-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  .navbar-header {
+    display: inline-block;
+  }
+
+  .navbar-collapse {
+    float: right;
+    width: 100%;
+  }
+
+  .navbar-nav {
+    background: inherit;
+  }
+
+  .navbar-collapse {
+    display: inline-block !important;
+  }
+
+  .navbar svg {
+    left: -10px;
+  }
+
 }
