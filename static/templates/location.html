@@ -1,80 +1,75 @@
 <div class="container spacer">
-    <div class="row">
-        <h2 class="col-xs-12">{{results.name}}</h2>
-    </div>
-
-    <div class="row">
-        <h5 class="col-xs-12">{{results.formatted_address}}</h5>
-        <h3 class="col-xs-12">{{rating}}</h3>
-    </div>
-
-    <div class="row">
-        <div id="map" class="map"></div>
-    </div>
-
-    <div class="row">
-        <!-- Wishlist/wishlisted -->
-        <div class="col-xs-12 wishlist-option">
-            <div ng-show="!isWishListed">
-                <i class="fa fa-heart-o fa-3x heart" ng-click="toggleHeart()" aria-hidden="true"></i>
-                <h4 class="wishlist-text">Wishlist</h4>
-            </div>
-            <div ng-show="isWishListed">
-                <i class="fa fa-heart fa-3x heart" ng-click="toggleHeart()" aria-hidden="true"></i>
-                <h4 class="wishlist-text">Wishlisted!</h4>
+    <div class="row location-format">
+        <div class="col-xs-12 col-sm-6">
+            <h2>{{results.name}}</h2>
+            <h5>{{results.formatted_address}}</h5>
+            <div class="wishlist-option">
+                <div ng-show="!isWishListed" ng-click="toggleHeart()">
+                    <i class="fa fa-heart-o fa-3x heart" aria-hidden="true"></i>
+                    <h4 class="wishlist-text">Wishlist</h4>
+                </div>
+                <div ng-show="isWishListed" ng-click="toggleHeart()">
+                    <i class="fa fa-heart fa-3x heart" aria-hidden="true"></i>
+                    <h4 class="wishlist-text">Wishlisted!</h4>
+                </div>
             </div>
         </div>
+        <div id="map" class="map col-xs-12 col-sm-6"></div>
     </div>
 
     <div class="row information">
-        <hr>
-        <h4 class="header-styling">Information:</h4>
-        <p class="col-sm-6">Phone: {{results.formatted_phone_number}}</p>
-        <p class="col-sm-6">Website:
-          <a href="{{results.website}}" target="_blank">{{results.website}}</a></p>
+        <div class="col-xs-12">
+            <hr>
+            <h4 class="header-styling">Information:</h4>
+            <p class="col-sm-6">Phone: {{results.formatted_phone_number}}</p>
+            <p class="col-sm-6">Website:
+                <a href="{{results.website}}" target="_blank">{{results.website}}</a>
+            </p>
+        </div>
     </div>
 
     <div class="row review">
-        <hr>
-        <h4 class="header-styling">Review:</h4>
-        <!-- Edit review -->
-        <div class="col-xs-12" ng-show="!isReviewed">
-            <form ng-submit="updateReview()">
-                <div class="form-group">
-                    <label for="review-rating">Rating:</label>
-                    <select id="review-rating" name="{{reviewRating}}" class="form-control" ng-model="reviewRating">
-                        <option disabled>Choose a rating from 1 - 10</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="review-title">Title:</label>
-                    <input id="review-title" type="text" class="form-control" ng-model="reviewTitle" placeholder="Review Title" value="{{reviewTitle}}">
-                </div>
-                <div class="form-group">
-                    <label for="review-body">Review:</label>
-                    <textarea id="review-body" rows="8" name="name" ng-model="reviewBody" placeholder="Write a review...">{{reviewBody}}</textarea>
-                </div>
-                <button type="submit" class="btn btn-block btn-primary">Submit</button>
-            </form>
+        <div class="col-xs-12">
+            <hr>
+            <h4 class="header-styling">Review:</h4>
+            <!-- Edit review -->
+            <div ng-show="!isReviewed">
+                <form ng-submit="updateReview()">
+                    <div class="form-group">
+                        <label for="review-rating">Rating:</label>
+                        <select id="review-rating" name="{{reviewRating}}" class="form-control" ng-model="reviewRating">
+                            <option disabled>Choose a rating from 1 - 10</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-title">Title:</label>
+                        <input id="review-title" type="text" class="form-control" ng-model="reviewTitle" placeholder="Review Title" value="{{reviewTitle}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="review-body">Review:</label>
+                        <textarea id="review-body" rows="8" name="name" ng-model="reviewBody" placeholder="Write a review...">{{reviewBody}}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-block btn-primary">Submit</button>
+                </form>
+            </div>
+            <!-- Display review -->
+            <div ng-show="isReviewed">
+                <h4>{{reviewTitle}}</h4>
+                <h5>{{reviewRating}} / 10 <i class="fa fa-star" aria-hidden="true"></i></h5>
+                <p class="left">{{reviewBody}}</p>
+                <button type="button" ng-click="updateReview()" class="btn org">Edit</button>
+            </div>
         </div>
-        <!-- Display review -->
-        <div class="col-xs-12" ng-show="isReviewed">
-            <h4>{{reviewTitle}}</h4>
-            <h5>{{reviewRating}} / 10 <i class="fa fa-star" aria-hidden="true"></i></h5>
-            <p class="left">{{reviewBody}}</p>
-            <button type="button" ng-click="updateReview()" class="btn org">Edit</button>
-        </div>
-        <!-- <p>{{locationDescription}}</p> -->
     </div>
 
     <div class="row photos" ng-show="{{imageUrls}}">

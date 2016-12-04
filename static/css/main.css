@@ -103,6 +103,7 @@ SPECIFIC LAYOUT/STYLES
   margin-top: 0;
   margin-bottom: 0;
   background: #f1f5ed;
+  text-align: center;
 }
 
 .navbar-default .navbar-brand { color: #333; }
@@ -163,6 +164,11 @@ SPECIFIC LAYOUT/STYLES
   min-height: 70vh;
 }
 
+.map.col-xs-12.col-sm-6 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .wishlist,
 .reviews,
 .review {
@@ -171,6 +177,10 @@ SPECIFIC LAYOUT/STYLES
 
 
 /* --- LOCATION PAGE --- */
+
+.location-format {
+  text-align: center;
+}
 
 /* Wishlist */
 .wishlist-option {
@@ -248,6 +258,12 @@ MEDIA QUERIES
 
   .navbar svg {
     left: -10px;
+  }
+
+  .location-format {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
   }
 
 }
