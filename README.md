@@ -21,16 +21,13 @@ All team members are students in the [Digital Crafts](https://digitalcrafts.com)
 
 ####Team DOM Ready
 * [John Coppola](https://github.com/johnnycopes/)  
-**Contributions:**  Enabled the Google Maps API on the back-end with Python to get specific place information. Refactored functionality in JavaScript that renders the map and creates the map markers. Created a mobile-first layout using a customized version of Bootstrap and styled the page.<br />
-
+<!-- **Contributions:**  Enabled the Google Maps API on the back-end with Python to get specific place information. Refactored functionality in JavaScript that renders the map and creates the map markers. Created a mobile-first layout using a customized version of Bootstrap and styled the page.<br /> -->
 * [Juan Cortes](https://github.com/jcortes0309)  
-**Contributions:**  <br />
-
+<!-- **Contributions:**  <br /> -->
 * [Carolyn Lam](https://github.com/Pumala)  
-**Contributions:**  <br />
-
+<!-- **Contributions:**  <br /> -->
 * [Dominic Zenon](https://github.com/Daz4ever)  
-**Contributions:**  <br />
+<!-- **Contributions:**  <br /> -->
 
 ##What we used:
 **Languages:**  
@@ -71,7 +68,7 @@ This was the first full-stack project for all team members, therefore our first 
 * Allow users to add their own photos to a place
 * Implement a network in which users can find each other and share their saved or reviewed places
 
-## Challenges & Solutions:
+<!-- ## Challenges & Solutions:
 **Some of the biggest challenges we faced with this project build included:**
 
 1.  **Challenge:**
@@ -88,7 +85,7 @@ This was the first full-stack project for all team members, therefore our first 
 
 4. **Challenge:**
 
-    **Solution:**
+    **Solution:** -->
 
 
 ##Code Snippets
