@@ -29,7 +29,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   $rootScope.logout = function() {
-    console.log("Entered the logout function");
     // remove method => pass in the value of the cookie data you want to remove
     $cookies.remove('cookieData');
     // reset all the scope variables
@@ -45,8 +44,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
 
   // Creates one marker when searching for an address and / or business
   service.createMarker = function(latLongObj, place_id, name) {
-    console.log('Can I do anything???');
-    console.log("place id::", place_id);
 
     var marker = new google.maps.Marker({
       position: latLongObj,
@@ -79,7 +76,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   service.createMarkers = function(markers, type) {
 
     markers.forEach(function(location) {
-      // console.log("Location info inside createMarkers: ", location);
       var name = location.name;
       var place_id = location.google_places_id;
       var latitude = location.latitude;
@@ -143,8 +139,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.location = function(place_id) {
-    console.log('user info', $rootScope.user_info);
-    console.log('place id', place_id);
     var url = '/api/location/' + place_id;
     return $http({
       method: 'GET',
@@ -168,7 +162,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.profile = function() {
-    // console.log("Profile data inside the factory: ", profile);
     var url = '/api/profile';
     return $http({
       method: 'GET',
@@ -194,7 +187,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.search = function(userQuery) {
-    console.log('Hello, I entered the search service and you are looking for: ', userQuery);
     show_or_search = "Search";
     var url = '/api/search';
     return $http({
@@ -224,9 +216,6 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
   };
 
   service.updateHeart = function(is_marked, location_info, user_info) {
-    console.log("Location info for my heart: ", location_info);
-    console.log('is heart marked???', is_marked);
-
     var url = '/api/location/edit/wishlisted';
     return $http({
       method: 'POST',
@@ -236,12 +225,10 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
         marked: is_marked,
         user_info: user_info
       }
-
     });
   };
 
   service.updateReviewInfo = function(review_info, location_info, user_info) {
-    console.log("Updated Review: ", location_info);
     var url = '/api/location/edit/review';
     return $http({
       method: 'POST',
@@ -262,6 +249,7 @@ app.factory("Dom_Ready_Factory", function($http, $cookies, $rootScope, $state) {
 // ====================
 // CONTROLLERS
 // ====================
+
 app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
   // instantly load the map on home page
   Dom_Ready_Factory.loadMap(null, 'far');
@@ -280,14 +268,11 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
   // Will do a request to the factory to get information to show in the api/search address
   $scope.submitSearch = function() {
     var query = $scope.search;
-    console.log('I am inside the submit search function!!! query Me!!!!', query);
     Dom_Ready_Factory.search(query)
       .error(function(data) {
-        console.log('I am an error in the submit search function!!!');
       })
       .success(function(data){
         // save data to a scope variable
-        console.log('search data being returned:', data);
         $scope.data = data.results;
         var results_length = $scope.data.length
         if (results_length === 1) {
@@ -315,7 +300,6 @@ app.controller("HomeController", function($scope, Dom_Ready_Factory, $state) {
 app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Factory, $state, $rootScope) {
 
   $scope.updateReview = function() {
-    console.log('rating in review is:', $scope.reviewRating);
     if ($scope.isReviewed) {
       $scope.isReviewed = false;
     } else {
@@ -326,13 +310,11 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       review: $scope.reviewBody,
       rating: $scope.reviewRating
     };
-    console.log('review info obj::', $scope.reviewInfo);
     // update the db by passing the review info, the location info, and the user info
     Dom_Ready_Factory.updateReviewInfo($scope.reviewInfo, $scope.location_info, $rootScope.user_info);
   };
 
   $scope.toggleHeart = function() {
-    console.log('heart status', $scope.isWishListed);
     // check if a heart is wishlisted
     if ($scope.isWishListed) {
       // if it is, unfavorite it
@@ -343,20 +325,16 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       $scope.isWishListed = true;
     }
 
-    console.log('location obj:', $scope.location_info);
-    console.log('wish listed????:', $scope.isWishListed);
-
     // update the db by passing the marked value, the location info, and the user info
     Dom_Ready_Factory.updateHeart($scope.isWishListed, $scope.location_info, $rootScope.user_info)
       .success(function() {
-        console.log('it was a success updating the heart');
+
       });
   };
 
   // pass in the desired location ID into the service function
   Dom_Ready_Factory.location($stateParams.place_id)
     .success(function(results){
-      console.log("Here are the location obj results:", results);
       // find out if location was wishlisted and save it to a scope variable
       $scope.isWishListed = results[0].is_wishlisted;
       $scope.review_info = results[0].review_info;
@@ -366,13 +344,11 @@ app.controller("LocationController", function($scope, $stateParams, Dom_Ready_Fa
       $scope.reviewRating = ($scope.review_info) ? $scope.review_info.rating : 0;
       $scope.reviewBody = ($scope.review_info) ? $scope.review_info.review : '';
 
-      console.log('review rating', typeof $scope.reviewRating);
       $scope.results = results[0].geocode_result.result;
       $scope.lat = $scope.results.geometry.location.lat;
       $scope.lng = $scope.results.geometry.location.lng;
       $scope.place_id = $scope.results.place_id;
       $scope.name = $scope.results.name;
-      console.log("My name is...", $scope.name);
 
       $scope.location_info = {
         name: ($scope.name) ? $scope.name : null,
@@ -416,15 +392,11 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $timeout, 
     Dom_Ready_Factory.login(login_info)
     .success(function(login) {
       $cookies.putObject('cookieData', login);
-      console.log("Cookie data: ", login);
       // store user information in a $rootScope variable
       $rootScope.user_info = login.user;
       // store token information in a $rootScope variable
       $rootScope.authToken = login.auth_token;
       // redirect to home page
-      // console.log(login);
-      // console.log("hello there");
-      // console.log($rootScope.user_info.first_name);
       $state.go('home');
     }).error(function() {
       $scope.loginError = true;
@@ -436,14 +408,9 @@ app.controller("LoginController", function($scope, Dom_Ready_Factory, $timeout, 
 });
 
 app.controller("ProfileController", function($scope, Dom_Ready_Factory, $rootScope) {
-  // console.log("Hi from the ProfileController");
-  // console.log("Token from app: ", $scope.token);
-  console.log("I have a token: ", $rootScope.authToken);
   Dom_Ready_Factory.profile()
     .success(function(profile_info) {
       $scope.profile_info = profile_info;
-      console.log("Profile info inside controller: ", profile_info);
-      console.log("Here's the profile_info", profile_info);
     });
 });
 
@@ -466,7 +433,6 @@ app.controller("SignUpController", function($scope, Dom_Ready_Factory, $state){
           // redirect to login page for new user to login after being added to db
           // Will uncomment this later once we create the login Controller and login.html file
           $state.go('login');
-          console.log('great success');
         });
     }
   };

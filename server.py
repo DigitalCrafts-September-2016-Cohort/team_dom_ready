@@ -33,7 +33,6 @@ def home():
 @app.route("/api/signup", methods=["POST"])
 def api_signup():
     customer_info = request.get_json()
-    print "Customer information: %s" % customer_info
 
     username = request.get_json()['username']
     email = request.get_json()['email']
@@ -57,7 +56,6 @@ def api_signup():
             'last_name': last_name
         }
     )
-    print "Customer signup information: %s" % signup_customer
     return jsonify(signup_customer)
 
 @app.route("/api/login", methods = ["POST"])
@@ -91,7 +89,6 @@ def login():
 def profile_page():
     profile_information = {}
     profile_token = request.args.get('profile_token')
-    print "\n\nI'm a token %s\n\n" % profile_token
 
     if profile_token:
         customer_id = db.query(
@@ -105,9 +102,6 @@ def profile_page():
         """, profile_token).dictresult()[0]
 
         customer_id = customer_id["customer_id"]
-
-        print "Customer ID is: %s" % customer_id
-
         customer_profile = db.query(
         """
             SELECT
@@ -120,8 +114,6 @@ def profile_page():
         ).dictresult()[0]
 
         del customer_profile["password"]
-
-        print "\n\ncustomer_profile is: %s\n\n" % customer_profile
 
         reviews = db.query(
         """
@@ -171,11 +163,8 @@ def profile_page():
 
 @app.route("/api/search")
 def api_search():
-    # Hard coded the customer_id for now.  We'll get the current user's customer_id from the database later using a token that is created at the time of login
-    print "\n\nMy arguments %s\n\n" % request.args
-    profile_token = request.args.get('profile_token')
-    print 'this is the token::', profile_token
 
+    profile_token = request.args.get('profile_token')
     customer_id = db.query('''
         SELECT
             customer_id
@@ -185,24 +174,17 @@ def api_search():
             token = $1
     ''', profile_token).namedresult()
 
-    print 'this is the customer id ::', customer_id
-
     reviewed_markers = [];
     show_or_search = request.args.get('show_or_search')
 
     if customer_id == []:
-        print 'i am nothing!'
-
         pass
     else:
-
-        # grab the value of customer id 
+        # grab the value of customer id
         customer_id = customer_id[0]
 
         # Determines if we want to show markers based on information in the database (show_or_search == "Show") or if we want to show one marker based on the address / business searched (show_or_search == "Search")
         if show_or_search == "Show":
-            # print "This is the show or search info: %s" % show_or_search
-
             reviewed_markers = db.query(
             """
                 SELECT
@@ -245,30 +227,19 @@ def api_search():
     if show_or_search == "Search":
         search = request.args.get('user_query')
         search = str(search)
-        print "\n\nSearch information is: %s\n\n" % search
         # Getting details from search
         search_result = gmaps.places(search)
-        # search_result = gmaps.geocode(search)
-        print "\n\nGeocode info for search searched %s\n\n" % search_result
         return jsonify(search_result)
-
     return 'Hello'
 
 @app.route('/api/location/<place_id>')
 def location(place_id):
-    # place_id = request.args.get('place_id')
     place_id = str(place_id)
-    print "AHHHHHHH"
     user_id = request.args.get('user_id')
-    # user_id = int(user_id)
-
-    print user_id
-
     # Geocoding a place id
     geocode_result = gmaps.place(place_id)
 
     if user_id != None:
-
         # make a query to see if user has already wishlisted the location or not
         query = db.query(
             '''
@@ -287,8 +258,6 @@ def location(place_id):
                 location.google_places_id = $2;
             ''', user_id, place_id).dictresult()
 
-        print "\n\n\nI'm the query information: %s\n\n\n" % query
-
         if query == []:
             is_wishlisted = False
         else:
@@ -301,7 +270,6 @@ def location(place_id):
         if location_id == []:
             review_info = None
         else:
-
             # first, grab the location_id and convert into integer
             location_id = location_id[0]['id']
             location_id = int(location_id)
@@ -347,8 +315,6 @@ def location(place_id):
             else:
                 review_info = None
 
-        print 'review info is .... %s' % review_info
-
         return jsonify([
             {
             'geocode_result': geocode_result,
@@ -367,17 +333,11 @@ def location(place_id):
 
 @app.route('/api/location/edit/review', methods=['POST'])
 def location_edit():
-
     results = request.get_json();
-
-    print 'edit me???!!!!:? %s' , results
-
     review_info = results['review_info']
     review = review_info['review']
     review_title = review_info['title']
     review_rating = review_info['rating']
-
-    place_id = results['location_info']['google_places_id']
     place_id = results['location_info']['google_places_id']
     name = results['location_info']['name']
     description = results['location_info']['description']
@@ -387,7 +347,6 @@ def location_edit():
 
     # use google_places_id to make a query to grab location id
     location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
-
     if location_id == []:
         # create a new location in the db
         db.insert(
@@ -399,14 +358,11 @@ def location_edit():
                 'latitude': lat,
                 'longitude': lng
             }
-
         )
     else:
-
         # first, grab the location_id and convert into integer
         location_id = location_id[0]['id']
         location_id = int(location_id)
-
         # make a query to check if review exists
         review_query = db.query(
         '''
@@ -425,9 +381,6 @@ def location_edit():
                 AND
                     location.id = $2
         ''', customer_id, location_id).dictresult()
-
-        print 'review query exists: %r', review_query
-
         if review_query == []:
             # create a new review
             db.insert(
@@ -440,10 +393,8 @@ def location_edit():
                     }
                 )
         else:
-
             review_id = review_query[0]['id']
             review_id = int(review_id)
-
             # update the review in the db
             db.update(
                 'review', {
@@ -460,12 +411,7 @@ def location_edit():
 
 @app.route("/api/location/edit/wishlisted", methods=['POST'])
 def marked():
-    print 'did i arrive in the wishlisted route???'
-
     results = request.get_json();
-
-    print "I am a mark!! %s", results
-
     marked = results['marked']
     place_id = results['location_info']['google_places_id']
     name = results['location_info']['name']
@@ -473,10 +419,8 @@ def marked():
     lat = results['location_info']['latitude']
     lng = results['location_info']['longitude']
     user_id = results['user_info']['id']
-
     # make a query to grab the location id
     location_id = db.query('select id from location where google_places_id = $1', place_id).dictresult()
-
     if location_id == []:
         # create a new location in the db
                 db.insert(
@@ -501,7 +445,6 @@ def marked():
 
     # if the location is wishlisted
     if marked:
-
         # add location to the wishlist
         db.insert(
                     'wishlist_loc',
@@ -513,9 +456,6 @@ def marked():
     else:
         # remove the location from the wishlist
         db.query('delete from wishlist_loc where wishlist_loc.location_id = $1', location_id)
-
-    return 'Be HAPPY!!'
-
 
 
 if __name__ == "__main__":
