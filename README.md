@@ -2,24 +2,27 @@
 img goes here
 
 ######
-[Live Project]()  |  [Overview](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready)   |   [Team](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready--roles)   |   [What We Used](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#what-we-used)   |   [MVP](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#mvp-minimum-viable-product)   |   [Challenges](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#challenges--solutions)   |   [Code](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#code-snippets)   | [Screenshots](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#screenshots)   |   [Contributing](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#contribute-to-nerd-review)
+[Live Project](http://myelp.club/#/)  |  [Overview](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready)   |   [Team](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready--roles)   |   [What We Used](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#what-we-used)   |   [MVP](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#mvp-minimum-viable-product)   |   [Challenges](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#challenges--solutions)   |   [Code](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#code-snippets)   | [Screenshots](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#screenshots)   |   [Contributing](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready#contribute-to-nerd-review)
 
 ##Overview:
-
+mYelp is a personal map application that can keep track of where a user has been and where they want to go. The app calls on the Google Maps API to allow the user to search for a place, see more details about it, save it to a wishlist, review it, and review their own map featuring color-coded markers identifying the places they've saved or reviewed.
 
 **Our conceptual goals for the site:**
-*
-*
-*
-*
-*
+* Home page displays a map that can search for points of interest and clicking on one shows more details
+* Users can sign up for an account and, once logged in, save places to a wishlist and write reviews about places
+* Reviewed and 'wishlisted' show up marked on the main map so the user can find them easily
+
+**Stretch goals:**
+* Ability to get directions from current location to a place
+* Allow users to add their own photos to a place
+* Implement a network in which users can find each other and share their saved or reviewed places
 
 ##Github Link:
-[Team DOM Ready](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready.git)
+[mYelp](https://github.com/DigitalCrafts-September-2016-Cohort/team_dom_ready.git)
 
 ##Team Members & Roles:
 **Click on each member's name to see their GitHub profile**
-All team members are students in the [Digital Crafts](https://digitalcrafts.com) September 2016 cohort. This project was initially completed as the first full-stack project for that curriculum and utilized the SCRUM development process and philosophy.  Paired and mob programming were the focus in the initial and final stages, while mid- and late-stage work was primarily completed through individual but coordinated and co-located programming.
+All team members are students in the [Digital Crafts](https://digitalcrafts.com) September 2016 cohort. This project was initially completed as the second full-stack project for that curriculum and utilized the SCRUM development process and philosophy.  Mob programming were the focus in the initial stages and the majority of the app was completed through pair-programming.
 
 ####Team DOM Ready
 * [John Coppola](https://github.com/johnnycopes/)  
@@ -54,17 +57,17 @@ All team members are students in the [Digital Crafts](https://digitalcrafts.com)
 * JavaScript/jQuery
 
 **Frameworks:**  
-* AngularJS 1.5.8
+* AngularJS 1.5.8 (including the following services)
+  * ui-router
+  * ngCookies
 * Bootstrap
-  * [Validator - plugin](https://1000hz.github.io/bootstrap-validator/)
 
 **Other:**  
 * PostgreSQL
 * Amazon Web Services EC2
 * Apache
-* Icons from the Noun project
-  * *NERD made by Nicolas Vicent -- http://www.nicolas-vicent.com/*
-  * *CROWN made by Nikita Kozin -- ya.kozinnikita@ya.ruÂ*
+* Logo icon from the Noun project
+  * *Icon made by Chanut is Industries -- https://thenounproject.com/chanut-is/*
 
 
 ##MVP (Minimum Viable Product):
